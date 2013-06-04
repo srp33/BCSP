@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=1:cpu2800MHz,pmem=8gb,walltime=1:00:00
+#PBS -N normalize
+#PBS -q batch
+
+if [ -z "$inFile" ]
+then
+  inFile=$1
+  outFile=$2
+  probeTabFile=$3
+  probeTabColIndices=$4
+  goodProbesFile=$5
+fi
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ ! -f $outFile ]
+then
+  python2 -u code/normalizeAffyArray.py "$inFile" "$outFile" "$probeTabFile" "$probeTabColIndices" "$goodProbesFile"
+fi
+
+exit 0

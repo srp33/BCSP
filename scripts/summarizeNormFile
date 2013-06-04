@@ -1,0 +1,23 @@
+#!/bin/bash
+
+inFile=$1
+fileSuffix=$2
+cohort=$3
+dataColumnIndex=$4
+description=$5
+probeGroup=$6
+keyDescription=$7
+keyProbeFile=$8
+probeFile=$9
+minProbesPer=${10}
+summarizeFunction=${11}
+outlierSamplesFile=${12}
+
+sampleID=`basename $inFile`
+sampleID=${sampleID/$fileSuffix/}
+outFile=summarization/$cohort/$sampleID.$keyDescription.$probeGroup.$description.txt
+
+./scripts/summarize.script "$sampleID" "$inFile" "$dataColumnIndex" "$keyProbeFile" "$probeFile" "$minProbesPer" "$summarizeFunction" "$outlierSamplesFile" "$outFile"
+
+# This line can be executed instead of the above on a batch system if one is available
+#qsub scripts/summarize.script -v sampleID="$sampleID",inFile="$inFile",dataColumnIndex="$dataColumnIndex",keyProbeFile="$keyProbeFile",probeFile="$probeFile",minProbesPer="$minProbesPer",summarizeFunction="$summarizeFunction",outlierSamplesFile="$outlierSamplesFile",outFile="$outFile"

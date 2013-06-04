@@ -1,0 +1,19 @@
+#!/bin/bash
+
+inDirName=$1
+probeTabFile=$2
+probeTabColIndices=$3
+goodProbesFile=$4
+
+mkdir -p normalization/$inDirName
+
+for inFile in raw/$inDirName/*.CEL
+do
+  outFile=${inFile/raw/normalization}
+  outFile="${outFile/CEL/norm.txt}"
+
+  ./scripts/normalize.script "$inFile" "$outFile" "$probeTabFile" "$probeTabColIndices" "$goodProbesFile"
+
+  # This line can be executed instead of the above on a batch system if one is available
+  #qsub scripts/normalize.script -v inFile="$inFile",outFile="$outFile",probeTabFile="$probeTabFile",probeTabColIndices="$probeTabColIndices",goodProbesFile="$goodProbesFile"
+done

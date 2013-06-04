@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=1:cpu2800MHz,pmem=4gb,walltime=1:00:00
+#PBS -N summarize
+#PBS -q batch
+
+if [ -z "$inFile" ]
+then
+  sampleID=$1
+  inFile=$2
+  dataColumnIndex=$3
+  keyProbeFile=$4
+  probeFile=$5
+  minProbesPer=$6
+  summarizeFunction=$7
+  outlierSamplesFile=$8
+  outFile=$9
+fi
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+echo $outFile
+if [ ! -f $outFile ]
+then
+  python2 code/SummarizeData.py $sampleID $inFile $dataColumnIndex $keyProbeFile $probeFile $minProbesPer $summarizeFunction $outlierSamplesFile $outFile
+fi
+
+exit 0

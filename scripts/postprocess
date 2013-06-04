@@ -1,0 +1,46 @@
+#!/bin/bash
+
+tmpFile1=`mktemp`
+tmpFile2=`mktemp`
+tmpFile3=`mktemp`
+tmpFile4=`mktemp`
+tmpFile5=`mktemp`
+tmpFile6=`mktemp`
+
+#for validationCohort in ontario1 ontario2
+for validationCohort in ontario2
+do
+  for pathwayFile in genesets/*.gene.ids.txt
+  do
+    pathway=`basename $pathwayFile`
+    pathway=${pathway/\.gene\.ids\.txt/}
+    echo $pathway
+
+    matrixFile=matrices/Pathways/utah${validationCohort}.batch.$pathway.txt
+    metricsFile=ML-Flex/Output/utah${validationCohort}_*Experiment/Results/utah${validationCohort}_${pathway}_weka_svm_weights_r_svm_rbf_Training_Data_Metrics.txt
+    featureRanksFile=ML-Flex/Output/utah${validationCohort}_*Experiment/Results/utah${validationCohort}_${pathway}_weka_svm_weights_MeanFeatureRanks.txt
+    outMatrixFile=matrices/Pathways/utah${validationCohort}.batch.${pathway/:/_}.TopGenes.txt
+
+    python code/FilterFile.py $metricsFile "x[0] == 'Best Num Features'" 0 $tmpFile1
+    numLines=`stat -c %s $tmpFile1`
+
+    if [ "$numLines" == "0" ]
+    then
+      bestNumGenes=1000
+    else
+      python code/SelectColumns.py $tmpFile1 1 $tmpFile2
+      bestNumGenes=`cat $tmpFile2`
+    fi
+
+    tail -n +2 $featureRanksFile > $tmpFile3
+    python code/SelectColumns.py $tmpFile3 0 $tmpFile4
+    head -n $bestNumGenes $tmpFile4 > $tmpFile3
+
+    head -n -1 $matrixFile > $tmpFile5
+    tail -n 1 $matrixFile > $tmpFile6
+    python code/FilterFileByColumnValues.py $tmpFile5 0 $tmpFile3 1 $tmpFile4
+    cat $tmpFile4 $tmpFile6 > $outMatrixFile
+  done
+done
+
+rm -f $tmpFile1 $tmpFile2 $tmpFile3 $tmpFile4 $tmpFile5 $tmpFile6
