@@ -13,10 +13,7 @@ exonGreenProbesFile=library/HuEx-1.0.green.probes.txt
 #python2 code/MatchKeysWithValues.py $exonPlanDbAffyFile 13 0 $exonGeneProbeFile
 
 # These are required for the GEO submission
-#python2 code/CreateMpsFile.py $exonGeneProbeFile $exonAffyProbeTabFile library/HuEx-1_0-st-v2.hg18.custom.mps
 #python2 code/Create_Pgf_Mps_Files.py $exonGeneProbeFile $exonAffyProbeTabFile library/HuEx-1_0-st-v2.hg18.custom.pgf library/HuEx-1_0-st-v2.hg18.custom.mps
-#vim library/HuEx-1_0-st-v2.hg18.custom.pgf
-#vim library/HuEx-1_0-st-v2.hg18.custom.mps
 
 # Parse gene information from external database files
 #python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,2 library/Entrez_gene_symbols.txt
