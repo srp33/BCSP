@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p raw normalization summarization matrices
+
 # Specify meta files
 exonPlanDbAffyFile=library/HuEx-1_0.green.flat
 exonAffyProbeTabFile=library/HuEx-1_0-st-v2.probe.tab
