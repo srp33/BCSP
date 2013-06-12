@@ -1,0 +1,2 @@
+NumFeatures	2
+AUC	0.68561872909699

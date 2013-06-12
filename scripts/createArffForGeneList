@@ -1,0 +1,14 @@
+#!/bin/bash
+
+matrixFile=$1
+geneIDFile=$2
+classFile=$3
+outArffFile=$4
+
+if [ ! -f $outArffFile ]
+then
+  tmpFile1=`mktemp`
+  python2 code/FilterFileByColumnValues.py $matrixFile 0 $geneIDFile 1 $tmpFile1
+  python2 code/CreateArff.py $tmpFile1 $classFile None True $outArffFile
+  rm -f $tmpFile1
+fi

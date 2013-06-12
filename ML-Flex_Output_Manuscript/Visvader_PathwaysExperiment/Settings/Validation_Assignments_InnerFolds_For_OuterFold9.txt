@@ -1,0 +1,10 @@
+Fold 1 (2 instances): Instance11,Instance19
+Fold 2 (2 instances): Instance17,Instance3
+Fold 3 (2 instances): Instance10,Instance16
+Fold 4 (2 instances): Instance18,Instance2
+Fold 5 (2 instances): Instance1,Instance5
+Fold 6 (2 instances): Instance15,Instance8
+Fold 7 (2 instances): Instance12,Instance14
+Fold 8 (2 instances): Instance20,Instance4
+Fold 9 (1 instances): Instance7
+Fold 10 (1 instances): Instance6

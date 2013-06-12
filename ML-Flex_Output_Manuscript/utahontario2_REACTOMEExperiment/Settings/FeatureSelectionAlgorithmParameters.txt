@@ -1,0 +1,10 @@
+# The parameters for the Weka algorithms can be copied from the Weka user interface
+weka_info_gain;mlflex.WekaLearner;weka.attributeSelection.InfoGainAttributeEval;-s;weka.attributeSelection.Ranker -T -1.7976931348623157E308 -N -1
+weka_svm_weights;mlflex.WekaLearner;weka.attributeSelection.SVMAttributeEval;-X;1;-Y;10;-Z;10;-P;1.0E-25;-T;1.0E-10;-C;1.0;-N;0;-s;weka.attributeSelection.Ranker -T -1.7976931348623157E308 -N -1
+weka_relieff;mlflex.WekaLearner;weka.attributeSelection.ReliefFAttributeEval;-M;-1;-D;1;-K;10;-s;weka.attributeSelection.Ranker -T -1.7976931348623157E308 -N -1
+orange_relieff;mlflex.OrangeLearner;/usr/bin/python;{Settings.GUTS_DIR}Python/OrangeExec.py;rankFeatures;orngFSS.attMeasure(examples, orange.MeasureAttribute_relief(m=50))
+# The following algorithm can only be used on discrete variables
+orange_relevance;mlflex.OrangeLearner;/usr/bin/python;{Settings.GUTS_DIR}Python/OrangeExec.py;rankFeatures;orngFSS.attMeasure(examples, orange.MeasureAttribute_relevance)
+# The following algorithm can only be used on discrete variables
+orange_info_gain;mlflex.OrangeLearner;/usr/bin/python;{Settings.GUTS_DIR}Python/OrangeExec.py;rankFeatures;orngFSS.attMeasure(examples, orange.MeasureAttribute_info)
+random;mlflex.RandomMachineLearner

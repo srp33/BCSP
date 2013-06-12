@@ -1,0 +1,33 @@
+Best Num Features	200
+Total number correct	24
+Total number incorrect	13
+Accuracy	0.6486486486486487
+Error rate	0.3513513513513513
+Baseline error rate	0.32432432432432434
+Baseline improvement	-0.027027027027026973
+Number instances with dependent variable class BRCACancer	12.0
+Number instances with dependent variable class BRCACancer predicted correctly	4.0
+Number instances with dependent variable class BRCACancer predicted incorrectly	8.0
+Number instances predicted as dependent variable class BRCACancer	9.0
+Number instances predicted as dependent variable class BRCACancer correctly	4.0
+Number instances predicted as dependent variable class BRCACancer incorrectly	5.0
+Proportion instances with dependent variable class BRCACancer	0.32432432432432434
+Proportion instances with dependent variable class BRCACancer predicted correctly	0.3333333333333333
+Proportion instances with dependent variable class BRCACancer predicted incorrectly	0.6666666666666666
+Proportion instances predicted as dependent variable class BRCACancer	0.24324324324324326
+Proportion instances predicted as dependent variable class BRCACancer correctly	0.4444444444444444
+Proportion instances predicted as dependent variable class BRCACancer incorrectly	0.5555555555555556
+Number instances with dependent variable class Control	25.0
+Number instances with dependent variable class Control predicted correctly	20.0
+Number instances with dependent variable class Control predicted incorrectly	5.0
+Number instances predicted as dependent variable class Control	28.0
+Number instances predicted as dependent variable class Control correctly	20.0
+Number instances predicted as dependent variable class Control incorrectly	8.0
+Proportion instances with dependent variable class Control	0.6756756756756757
+Proportion instances with dependent variable class Control predicted correctly	0.8
+Proportion instances with dependent variable class Control predicted incorrectly	0.2
+Proportion instances predicted as dependent variable class Control	0.7567567567567568
+Proportion instances predicted as dependent variable class Control correctly	0.7142857142857143
+Proportion instances predicted as dependent variable class Control incorrectly	0.2857142857142857
+AUC	0.53
+Youden Index	0.1333333333333333

@@ -7,8 +7,7 @@ tmpFile4=`mktemp`
 tmpFile5=`mktemp`
 tmpFile6=`mktemp`
 
-#for validationCohort in ontario1 ontario2
-for validationCohort in ontario2
+for validationCohort in ontario1 ontario2
 do
   for pathwayFile in genesets/*.gene.ids.txt
   do

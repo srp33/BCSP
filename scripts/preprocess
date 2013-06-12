@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p raw normalization summarization matrices
+mkdir -p raw raw/utah raw/ontario1 raw/ontario2 normalization/utah normalization/ontario1 normalization/ontario2 summarization/utah summarization/ontario1 summarization/ontario2 matrices misc genesets
 
 # Specify meta files
 exonPlanDbAffyFile=library/HuEx-1_0.green.flat
@@ -11,80 +11,87 @@ exonGeneProbeFile=library/HuEx-1.0.gene_probe.txt
 exonGreenProbesFile=library/HuEx-1.0.green.probes.txt
 
 # Parse Affy meta files to generate secondary meta files
-#python2 code/ParseProbesFromPlanDbAffyFile.py $exonPlanDbAffyFile False False $exonGreenProbesFile
-#python2 code/MatchKeysWithValues.py $exonPlanDbAffyFile 13 0 $exonGeneProbeFile
+python2 code/ParseProbesFromPlanDbAffyFile.py $exonPlanDbAffyFile False False $exonGreenProbesFile
+python2 code/MatchKeysWithValues.py $exonPlanDbAffyFile 13 0 $exonGeneProbeFile
 
-# These are required for the GEO submission
-#python2 code/Create_Pgf_Mps_Files.py $exonGeneProbeFile $exonAffyProbeTabFile library/HuEx-1_0-st-v2.hg18.custom.pgf library/HuEx-1_0-st-v2.hg18.custom.mps
+# These were required for the GEO submission
+python2 code/Create_Pgf_Mps_Clf_Files.py $exonGeneProbeFile $exonAffyProbeTabFile library/HuEx-1_0-st-v2.hg18.custom.pgf library/HuEx-1_0-st-v2.hg18.custom.mps library/HuEx-1_0-st-v2.hg18.custom.clf
 
 # Parse gene information from external database files
-#python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,2 library/Entrez_gene_symbols.txt
-#python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,4 library/Entrez_gene_synonyms.txt
-#python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,8 library/Entrez_gene_names.txt
+python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,2 library/Entrez_gene_symbols.txt
+python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,4 library/Entrez_gene_synonyms.txt
+python2 code/SelectColumns.py library/Entrez_Homo_sapiens.gene_info.txt 1,8 library/Entrez_gene_names.txt
 
 # Parse pathway files
-#python2 code/ParseEntrezGeneIDsForKeggPathways.py library/kegg_hsa_pathways.txt library/kegg_hsa_gene_pathway.txt library/kegg_hsa_entrezgene.txt genesets/KEGG_{PATHWAY_NAME}.gene.ids.txt
-#python2 code/SplitGmtToGeneSetFiles.py library/c2.cp.v3.0.entrez.gmt KEGG "genesets/{PATHWAY_NAME}.gene.ids.txt"
+python2 code/ParseEntrezGeneIDsForKeggPathways.py library/kegg_hsa_pathways.txt library/kegg_hsa_gene_pathway.txt library/kegg_hsa_entrezgene.txt genesets/KEGG_{PATHWAY_NAME}.gene.ids.txt
+python2 code/SplitGmtToGeneSetFiles.py library/c2.cp.v3.0.entrez.gmt KEGG "genesets/{PATHWAY_NAME}.gene.ids.txt"
 
 # Create clinical files
-#python2 code/CreateClassFile.py clinical/combined.annotation.txt 0 1 "Control=0,1,2,4;BRCACancer=3,5" clinical/combined.0124v35.txt
-#python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 1 clinical/utah.samples.txt
-#python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 2 clinical/ontario1.samples.txt
-#python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 3 clinical/ontario2.samples.txt
-#python2 code/SelectColumns.py clinical/BatchInfo.Study.txt 0,2 clinical/combined.cohort.temp.txt
-#sed s/\\./-/g clinical/combined.cohort.temp.txt > clinical/combined.cohort.txt
-#rm clinical/combined.cohort.temp.txt
+python2 code/CreateClassFile.py clinical/combined.annotation.txt 0 1 "Control=0,1,2,4;BRCACancer=3,5" clinical/combined.0124v35.txt
+python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 1 clinical/utah.samples.txt
+python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 2 clinical/ontario1.samples.txt
+python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 3 clinical/ontario2.samples.txt
+python2 code/SelectColumns.py clinical/BatchInfo.Study.txt 0,2 clinical/combined.cohort.temp.txt
+sed s/\\./-/g clinical/combined.cohort.temp.txt > clinical/combined.cohort.txt
+rm clinical/combined.cohort.temp.txt
 
 # Normalize CEL files
-#scripts/normalizeDir utah $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
-#scripts/normalizeDir ontario1 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
-#scripts/normalizeDir ontario2 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
+scripts/normalizeDir utah $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
+scripts/normalizeDir ontario1 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
+scripts/normalizeDir ontario2 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
 
 # Summarize data at gene level
-#scripts/summarizeNormDir .norm.txt utah 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
-#scripts/summarizeNormDir .norm.txt ontario1 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
-#scripts/summarizeNormDir .norm.txt ontario2 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
+scripts/summarizeNormDir .norm.txt utah 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
+scripts/summarizeNormDir .norm.txt ontario1 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
+scripts/summarizeNormDir .norm.txt ontario2 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
 
 ## Create matrix files with summarized data
-#python2 code/BuildMatrixFile.py summarization/utah/ .gene.green.expr.txt None 1 matrices/utah.expr.txt
-#python2 code/BuildMatrixFile.py summarization/ontario1/ .gene.green.expr.txt None 1 matrices/ontario1.expr.txt
-#python2 code/BuildMatrixFile.py summarization/ontario2/ .gene.green.expr.txt None 1 matrices/ontario2.expr.txt
+python2 code/BuildMatrixFile.py summarization/utah/ .gene.green.expr.txt None 1 matrices/utah.expr.txt
+python2 code/BuildMatrixFile.py summarization/ontario1/ .gene.green.expr.txt None 1 matrices/ontario1.expr.txt
+python2 code/BuildMatrixFile.py summarization/ontario2/ .gene.green.expr.txt None 1 matrices/ontario2.expr.txt
 
 # Create ARFF file with class information
-#python2 code/CreateArff.py None clinical/combined.0124v35.txt None True misc/classes.0124v35.arff
+python2 code/CreateArff.py None clinical/combined.0124v35.txt None True ML-Flex/InputData/classes.0124v35.arff
 
-#for validationCohort in ontario1 ontario2
-#do
+# Build matrix files for Utah and Ontario
+for validationCohort in ontario1 ontario2
+do
   # Batch adjust data
-#  python2 code/MergeMatrixOnRowNames.py matrices/utah.expr.txt matrices/${validationCohort}.expr.txt matrices/utah${validationCohort}.expr.txt
-#  cd matrices
-#  Rscript --vanilla ../code/BatchAdjust.R ../code/ComBat.R utah${validationCohort}.expr.txt ../clinical/BatchInfo.Study.txt utah${validationCohort}.batch.txt
-#  cd ..
+  python2 code/MergeMatrixOnRowNames.py matrices/utah.expr.txt matrices/${validationCohort}.expr.txt matrices/utah${validationCohort}.expr.txt
+  cd matrices
+  Rscript --vanilla ../code/BatchAdjust.R ../code/ComBat.R utah${validationCohort}.expr.txt ../clinical/BatchInfo.Study.txt utah${validationCohort}.batch.txt
+  cd ..
 
-#  # Save batch adjusted values to separate matrix file
-#  python2 code/SaveIndividualValuesFromMatrix.py matrices/utah${validationCohort}.batch.txt clinical/$validationCohort.samples.txt summarization/$validationCohort .gene.green.batch.txt
-#  python2 code/BuildMatrixFile.py summarization/$validationCohort/ .gene.green.batch.txt None 1 matrices/$validationCohort.batch.txt
+  # Save batch adjusted values to separate matrix file
+  python2 code/SaveIndividualValuesFromMatrix.py matrices/utah${validationCohort}.batch.txt clinical/$validationCohort.samples.txt summarization/$validationCohort .gene.green.batch.txt
+  python2 code/BuildMatrixFile.py summarization/$validationCohort/ .gene.green.batch.txt None 1 matrices/$validationCohort.batch.txt
 
   # Remove genes that are associated with epi/blood variables
-#  Rscript --vanilla code/EpiBloodFiltering.R clinical/blood.txt clinical/epidemiologic.txt matrices/utah${validationCohort}.batch.txt misc/utah${validationCohort}.epiblood.keep.txt misc/utah${validationCohort}.epiblood.filter.txt
-#  python2 code/FilterFileByColumnValues.py matrices/utah${validationCohort}.batch.txt 0 misc/utah${validationCohort}.epiblood.keep.txt 1 matrices/utah${validationCohort}.batch.txt
+  Rscript --vanilla code/EpiBloodFiltering.R clinical/blood.txt clinical/epidemiologic.txt matrices/utah${validationCohort}.batch.txt misc/utah${validationCohort}.epiblood.keep.txt misc/utah${validationCohort}.epiblood.filter.txt
+  python2 code/FilterFileByColumnValues.py matrices/utah${validationCohort}.batch.txt 0 misc/utah${validationCohort}.epiblood.keep.txt 1 matrices/utah${validationCohort}.batch.txt
 
   # Create ARFF file for full data set
-#  python2 code/CreateArff.py matrices/utah${validationCohort}.batch.txt clinical/combined.0124v35.txt None True misc/utah${validationCohort}.batch.arff
-#done
+  python2 code/CreateArff.py matrices/utah${validationCohort}.batch.txt clinical/combined.0124v35.txt None True ML-Flex/InputData/utah${validationCohort}.batch.arff
 
-#########################################################
-# Enable GSEA analysis
-#########################################################
-#python2 code/MergeGeneIDFilesIntoGmt.py "genesets/*.gene.ids.txt" library/all.gmt
-#python2 code/SelectColumns.py matrices/utahontario1.batch.txt 0to124 matrices/utah1.batch.txt
-#python2 code/BuildGenePatternFiles.py matrices/utah1.batch.txt clinical/combined.0124v35.txt misc/utah1.batch.gct misc/utah1.cls
+  # Create ARFF file for pathway gene sets
+  for pathwayFile in genesets/*.gene.ids.txt
+  do
+    pathway=`basename $pathwayFile`
+    pathway=${pathway/\.gene\.ids\.txt/}
+    echo Creating ARFF for $pathway for $validationCohort
 
-############ Visvader ***************
-#python2 code/CreateArff.py None clinical/Visvader.Control_vs_BRCA.classes.txt None True misc/Visvader.classes.arff
-#python2 code/CreateArff.py matrices/Visvader.txt clinical/Visvader.Control_vs_BRCA.classes.txt None True misc/Visvader.arff
+    scripts/createArffForGeneList matrices/utah${validationCohort}.batch.txt genesets/$pathway.gene.ids.txt clinical/combined.0124v35.txt ML-Flex/InputData/utah${validationCohort}.batch.$pathway.arff
+  done
+done
 
-#########################################################
-# Enable predictions based on exome data
-#########################################################
-#python2 code/CreateArff.py matrices/Variants.matrix.txt clinical/BCSP_Exome_classes.txt None True ML-Flex/InputData/BCSP_Exome.arff
+# Build Arff files for Lim, et al. (Visvader)
+python2 code/CreateArff.py None clinical/Visvader.Control_vs_BRCA.classes.txt None True ML-Flex/InputData/Visvader.classes.arff
+
+for pathwayFile in genesets/*.gene.ids.txt
+do
+  pathway=`basename $pathwayFile`
+  pathway=${pathway/\.gene\.ids\.txt/}
+  echo Creating ARFF for $pathway for Visvader
+
+  scripts/createArffForGeneList matrices/Visvader.txt genesets/$pathway.gene.ids.txt clinical/Visvader.Control_vs_BRCA.classes.txt ML-Flex/InputData/Visvader.$pathway.arff
+done

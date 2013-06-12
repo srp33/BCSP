@@ -1,8 +1,0 @@
-#FEATURE_SELECTION_ALGORITHMS=weka_svm_weights
-FEATURE_SELECTION_ALGORITHMS=None
-CLASSIFICATION_ALGORITHMS=r_svm_rbf
-INDEPENDENT_VARIABLE_DATA_PROCESSORS=mlflex.ArffDataProcessor("utahontario2", "utahontario2.SelectedGenes.batch.arff")
-DEPENDENT_VARIABLE_DATA_PROCESSOR=mlflex.ArffDependentVariableDataProcessor("utahontario_Class", "utahontario2.SelectedGenes.batch.arff")
-#TRAIN_INSTANCE_IDS=utah.samples.txt
-#TEST_INSTANCE_IDS=ontario1.samples.txt
-NUM_INNER_CROSS_VALIDATION_FOLDS=10
