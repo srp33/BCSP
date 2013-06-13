@@ -1,18 +1,32 @@
 Prerequisites
 ====
+
   python (we used v2.6.6)
+
   scipy/numpy
+
   R
+
     gdata package
+
     e1071 package
+
   FastQC
+
   samtools-0.1.18
+
   bamtools
+
   bwa-0.6.1
+
   GenomeAnalysisTK-1.5-3-gbb2c10b
+
   GenomeAnalysisTK-2.3-4-g57ea19f
+
   picard-tools-1.64
+
   snpEff_3_1
+
   dbNSFP2
 
 Notes
