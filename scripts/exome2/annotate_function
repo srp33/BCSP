@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inVcfFile" ]
+then
+  inVcfFile="$1"
+fi
+if [ -z "$genomeVersion" ]
+then
+  genomeVersion="$2"
+fi
+if [ -z "$removeModifierLowVariants" ]
+then
+  removeModifierLowVariants="$3"
+fi
+if [ -z "$outVcfFile" ]
+then
+  outVcfFile="$4"
+fi
+
+source scripts/exome2/paths
+source scripts/create_temp_files
+
+currentDir=`pwd`
+
+#cd $snpEffDir
+#$snpEffBaseCommand download $genomeVersion
+#cd $currentDir
+
+cd $snpEffDir
+echo Running snpEff
+$snpEffBaseCommand eff -canon -no-downstream -no-upstream -no-intergenic -no-intron -no-utr -noLog -v $genomeVersion $currentDir/$inVcfFile > $currentDir/$outVcfFile
+cd $currentDir
+
+if [ "$removeModifierLowVariants" == "TRUE" ]
+then
+  python2 code/PrintLinesStartingWith.py $outVcfFile "#" > $tmpFile1
+  python2 code/PrintLinesNotStartingWith.py $outVcfFile "#" > $tmpFile2
+  python2 code/FilterFile.py $tmpFile2 "'MODERATE' in x[7] or 'HIGH' in x[7]" 0 $tmpFile3
+  cat $tmpFile1 $tmpFile3 > $outVcfFile
+fi
+
+source scripts/delete_temp_files

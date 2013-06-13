@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+else
+  inGzFile="$1"
+fi
+
+echo Preparing $inGzFile
+gunzip $inGzFile
+
+inFile=${inGzFile/\.gz/}
+
+isSanger=`python26 code/IsFastqInSangerFormat.py $inFile`
+if [ "$isSanger" == "False" ]
+then
+  echo $inFile is not in Sanger FASTQ format, so converting quality scores
+  python26 code/ConvertFastqQualityScores.py $inFile $inFile.mod
+
+  isSanger=`python26 code/IsFastqInSangerFormat.py $inFile.mod`
+  if [ "$isSanger" == "True" ]
+  then
+    echo $inFile is now in Sanger FASTQ format
+    mv $inFile.mod $inFile
+  else
+    echo $inFile did not get converted properly to Sanger FASTQ format
+  fi
+else
+  echo $inFile was initially in Sanger FASTQ format
+fi
+
+#gzip $inFile

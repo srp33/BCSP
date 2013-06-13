@@ -1,0 +1,152 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+if [ -z "$bamFile1" ]
+then
+  bamFile1="$1"
+fi
+if [ -z "$bamFile2" ]
+then
+  bamFile2="$2"
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile="$3"
+fi
+if [ -z "$knownVcfFile" ]
+then
+  knownVcfFile="$4"
+fi
+if [ -z "$outBamFile1" ]
+then
+  outBamFile1="$5"
+fi
+if [ -z "$outBamFile2" ]
+then
+  outBamFile2="$6"
+fi
+if [ -z "$stdOutFile" ]
+then
+  stdOutFile="$7"
+fi
+
+source scripts/exome/paths
+
+#tmpLocation1=`mktemp`
+#tmpLocation2=`mktemp`
+#originalBamFile1=$bamFile1
+#originalBamFile2=$bamFile2
+#bamFile1=$tmpLocation1.bam
+#bamFile2=$tmpLocation2.bam
+#inProgressFile=$originalBamFile1.inprogress
+
+function cleanup
+{
+#  rm -fv $inProgressFile
+#  rm -rfv ${tmpLocation1}*
+#  rm -rfv ${tmpLocation2}*
+  exit 0
+}
+
+#trap 'cleanup' TERM
+
+#if [ -f $inProgressFile ]
+#then
+#  echo $originalBamFile1 and $originalBamFile2 already in progress
+#  cleanup
+#fi
+
+function go {
+#  echo Moving $originalBamFile1 to $bamFile1
+#  mv $originalBamFile1 $bamFile1
+#  mv $originalBamFile2 $bamFile2
+
+#  echo Indexing $bamFile1
+#  $samToolsDir/samtools index $bamFile1
+
+#  echo Indexing $bamFile2
+#  $samToolsDir/samtools index $bamFile2
+
+  echo Creating realigned target file
+  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -T RealignerTargetCreator \
+    -R $genomeFastaFile \
+    -I $bamFile1 \
+    -I $bamFile2 \
+    --known $knownVcfFile \
+    -o $bamFile1.intervals
+
+  echo Performing Indel realignment on $bamFile1
+  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -I $bamFile1 \
+    -I $bamFile2 \
+    -R $genomeFastaFile \
+    -T IndelRealigner \
+    -targetIntervals $bamFile1.intervals \
+    -known $knownVcfFile \
+    -LOD 0.4 \
+    -nWayOut .tmp.bam
+
+  
+
+#  echo Counting covariates on $bamFile1
+#  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+#    -I ${bamFile1/\.bam/.tmp.bam} \
+#    -R $genomeFastaFile \
+#    -T CountCovariates \
+#    -knownSites $knownVcfFile \
+#    -cov ReadGroupCovariate \
+#    -cov QualityScoreCovariate \
+#    -cov CycleCovariate \
+#    -cov DinucCovariate \
+#    --num_threads 16 \
+#    -recalFile ${bamFile1}.recal.csv
+#
+#  echo Counting covariates on $bamFile2
+#  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+#    -I ${bamFile2/\.bam/.tmp.bam} \
+#    -R $genomeFastaFile \
+#    -T CountCovariates \
+#    -knownSites $knownVcfFile \
+#    -cov ReadGroupCovariate \
+#    -cov QualityScoreCovariate \
+#    -cov CycleCovariate \
+#    -cov DinucCovariate \
+#    --num_threads 16 \
+#    -recalFile ${bamFile2}.recal.csv
+#
+#  echo Recalibrating table for $bamFile1
+#  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+#    -I ${bamFile}.tmp.bam \
+#    -R $genomeFastaFile \
+#    -T TableRecalibration \
+#    -recalFile ${bamFile}.recal.csv \
+#    -o $bamFile
+#
+#  echo Recalibrating table for $bamFile
+#  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+#    -I ${bamFile}.tmp.bam \
+#    -R $genomeFastaFile \
+#    -T TableRecalibration \
+#    -recalFile ${bamFile}.recal.csv \
+#    -o $bamFile
+#
+#  echo Reindexing BAM
+#  $samToolsDir/samtools index $bamFile
+#
+#  echo Reducing BAM
+#  java -Xmx16g -jar $gatkDir/GenomeAnalysisTK.jar \
+#    -T ReduceReads \
+#    -R $genomeFastaFile \
+#    -I $bamFile \
+#    -o $bamFile.tmp.bam
+#
+#  mv -v $bamFile.tmp.bam $outBamFile
+#  mv -v ${bamFile/\.bam/.bai} ${outBamFile/\.bam/.bai}
+#  cleanup
+}
+
+go 2>&1 | tee $stdOutFile

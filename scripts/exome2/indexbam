@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$bamFile" ]
+then
+  bamFile=$1
+fi
+
+source scripts/exome2/paths
+
+echo Indexing $bamFile
+$samToolsDir/samtools index $bamFile

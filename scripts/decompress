@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+else
+  inFile="$1"
+fi
+
+echo Decompressing $inFile
+rm -f ${inFile/\.gz/}
+gunzip $inFile
+echo Done

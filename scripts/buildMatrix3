@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This works when each input file has the same entries in first column.
+
+inFilePattern="$1"
+outFile=$2
+
+source scripts/create_temp_files
+
+rm -f $outFile
+
+ls $inFilePattern | parallel --max-procs 50 "sort {} > $tmpDir/{/}"
+ls $tmpDir/* | parallel --max-procs 50 "python2 code/transposeData.py {} {}"
+
+python2 code/HeaderCat.py "$tmpDir/*" $tmpFile1
+python2 code/TransposeData.py $tmpFile1 $outFile
+
+source scripts/delete_temp_files

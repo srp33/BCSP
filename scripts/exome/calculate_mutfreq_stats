@@ -1,0 +1,33 @@
+#!/bin/bash
+
+variantsFile=$1
+entrezGenesFile=$2
+entrezGeneSymbolsFile=$3
+gmtFiles=$4
+samples1File=$5
+samples2File=$6
+description1=$7
+description2=$8
+outGeneFile=$9
+outPathwayFile=${10}
+permute=${11}
+
+source scripts/create_temp_files
+
+if [ "$permute" == "True" ]
+then
+  python2 code/PermuteFiles.py $samples1File $samples2File $tmpFile5 $tmpFile6
+else
+  cp $samples1File $tmpFile5
+  cp $samples2File $tmpFile6
+fi
+
+python2 code/CountMutatedSamples.py $variantsFile $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile $tmpFile5 $description1 672,675 $tmpFile1 $tmpFile3 &
+python2 code/CountMutatedSamples.py $variantsFile $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile $tmpFile6 $description2 672,675 $tmpFile2 $tmpFile4 &
+wait
+
+Rscript --vanilla code/CompareVariantFrequencies.R $tmpFile1 $tmpFile2 $outGeneFile &
+Rscript --vanilla code/CompareVariantFrequencies.R $tmpFile3 $tmpFile4 $outPathwayFile &
+wait
+
+source scripts/delete_temp_files

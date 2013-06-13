@@ -1,0 +1,74 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inFilePath" ]
+then
+  inFilePath=$1
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile="$2"
+fi
+if [ -z "$dbSnpVcfFile" ]
+then
+  dbSnpVcfFile="$3"
+fi
+if [ -z "$hapMapVcfFile" ]
+then
+  hapMapVcfFile="$4"
+fi
+if [ -z "$thousandGenomesVcfFile" ]
+then
+  thousandGenomesVcfFile="$5"
+fi
+if [ -z "$filter" ]
+then
+  filter="$6"
+fi
+if [ -z "$outFilePath" ]
+then
+  outFilePath=$7
+fi
+if [ -z "$recalFilePath" ]
+then
+  recalFilePath=$8
+fi
+if [ -z "$tranchesFilePath" ]
+then
+  tranchesFilePath=$9
+fi
+if [ -z "$rPlotFilePath" ]
+then
+  rPlotFilePath=${10}
+fi
+
+source scripts/exome/paths
+
+echo Create recalibration files
+java -Xmx4g -jar $gatkDir/GenomeAnalysisTK.jar \
+   -T VariantRecalibrator \
+   -R $genomeFastaFile \
+   -input $inFilePath \
+   --maxGaussians 6 \
+   -mode SNP \
+   -resource:dbsnp,known=true,training=false,truth=false,prior=8.0 $dbSnpVcfFile \
+   -resource:hapmap,known=false,training=true,truth=true,prior=15.0 $hapMapVcfFile \
+   -resource:omni,known=false,training=true,truth=false,prior=12.0 $thousandGenomesVcfFile \
+   $filter \
+   -recalFile $recalFilePath \
+   -tranchesFile $tranchesFilePath \
+   -rscriptFile $rPlotFilePath
+
+echo Apply recalibration
+java -Xmx12g -jar $gatkDir/GenomeAnalysisTK.jar \
+   -T ApplyRecalibration \
+   -R $genomeFastaFile \
+   -input $inFilePath \
+   --ts_filter_level 99.0 \
+   -recalFile $recalFilePath \
+   -tranchesFile $tranchesFilePath \
+   -o $outFilePath

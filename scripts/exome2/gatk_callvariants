@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inBamFiles" ]
+then
+  inBamFiles="$1"
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile=$2
+fi
+if [ -z "$dbSnpVcfFile" ]
+then
+  dbSnpVcfFile=$3
+fi
+if [ -z "$glm" ]
+then
+  glm=$4
+fi
+if [ -z "$intervalsBedFile" ]
+then
+  intervalsBedFile="$5"
+fi
+if [ -z "$numThreads" ]
+then
+  numThreads=$6
+fi
+if [ -z "$outFile" ]
+then
+  outFile=$7
+fi
+if [ -z "$stdOutFile" ]
+then
+  stdOutFile=$8
+fi
+
+source scripts/exome2/paths
+
+function go {
+  echo Unified genotype
+  java -Xmx110g -jar $gatkDir/GenomeAnalysisTK.jar \
+    `ls $inBamFiles | xargs -L 1 echo -I \\` \
+    -R $genomeFastaFile \
+    -T UnifiedGenotyper \
+    -out_mode EMIT_VARIANTS_ONLY \
+    --dbsnp $dbSnpVcfFile \
+    -dcov 500 \
+    --min_base_quality_score 20 \
+    -glm $glm \
+    -L $intervalsBedFile \
+    --num_threads 8 \
+    -nct 32 \
+    -o $outFile
+}
+
+go 2>&1 | tee $stdOutFile

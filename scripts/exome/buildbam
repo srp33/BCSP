@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+else
+  dataDir=$1
+  outputDir=$2
+  id=$3
+  inFileSuffix=$4
+fi
+
+source scripts/exome/paths
+
+for i in 1 2
+do
+  $fastQCDir/fastqc -o $outputDir $dataDir/${id}_${i}.${inFileSuffix} &
+  $bwaDir/bwa aln -t 8 $bwaDir/indices/hg19 $dataDir/${id}_${i}.${inFileSuffix} > $outputDir/${id}_${i}.sai &
+done
+wait
+rm -rf $outputDir/${id}_*_fastqc
+
+$bwaDir/bwa sampe -P $bwaDir/indices/hg19 -r "@RG\tID:${id}\tLB:${id}\tPL:ILLUMINA\tSM:${id}" $outputDir/${id}_1.sai $outputDir/${id}_2.sai $dataDir/${id}_1.${inFileSuffix} $dataDir/${id}_2.${inFileSuffix} > $outputDir/${id}.sam
+
+rm $dataDir/${id}_?.${inFileSuffix}
+
+$samToolsDir/samtools view -bS $outputDir/${id}.sam > $outputDir/${id}.bam
+
+rm $outputDir/${id}_?.sai
+rm $outputDir/${id}.sam

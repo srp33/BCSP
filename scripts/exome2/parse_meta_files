@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source scripts/create_temp_files
+source scripts/exome2/paths
+
+function buildEntrezGeneFiles {
+  tail -n +2 $entrezSeqGeneFile > $tmpFile1
+  python2 code/FilterFile.py $tmpFile1 "x[12]=='GRCh37.p5-Primary Assembly'" 0 $tmpFile2
+  python2 code/BuildEntrezGenePositionsFile.py $tmpFile2 $entrezGenePositionsFile $entrezGenehg19ExonBedFile $entrezGenehg19ExonPositionMapFile $entrezGeneStrandFile
+  python2 code/BuildEntrezGeneSequencesFile.py $genomehg19FastaFile $entrezGenePositionsFile $entrezGeneSequencesFile
+
+  python2 code/BuildPositionGeneExonMap.py $entrezGenePositionsFile $entrezGenehg19ExonPositionMapFile
+
+  python2 code/InsertColumnViaExpression.py $entrezGenePositionsFile "int(x[2]) - 1" $tmpFile1
+  python2 code/InsertColumnViaExpression.py $tmpFile1 "int(x[3]) - 1" $tmpFile2
+  python2 code/SelectColumns.py $tmpFile2 1,-2,-1,0 $entrezGenehg19BedFile
+  python2 code/ReplaceText.py $entrezGenehg19BedFile chr "" $entrezGeneb37BedFile
+}
+
+buildEntrezGeneFiles
+
+##python code/SavePositionGeneExonFile.py $entrezGenePositionsFile $entrezGenehg19ExonPositionMapFile
+
+source scripts/delete_temp_files

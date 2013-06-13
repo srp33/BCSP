@@ -1,0 +1,13 @@
+#!/bin/bash
+
+inFile=$1
+outFile=$2
+
+source scripts/create_temp_files
+
+python2 code/PrintLinesStartingWith.py $inFile "#" > $tmpFile1
+python2 code/PrintLinesNotStartingWith.py $inFile "#" > $tmpFile2
+python2 code/FilterFile.py $tmpFile2 "float(x[5]) >= 100.0 and x[6]=='PASS'" 0 $tmpFile3
+cat $tmpFile1 $tmpFile3 > $outFile
+
+source scripts/delete_temp_files

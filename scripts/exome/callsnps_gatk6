@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inBamFiles" ]
+then
+  inBamFiles="$1"
+fi
+if [ -z "$inVcfFile" ]
+then
+  inVcfFile=$2
+fi
+if [ -z "$outVcfFile" ]
+then
+  outVcfFile=$3
+fi
+
+source scripts/exome/paths
+
+echo Read backed phasing
+java -Xmx8g -jar $gatkDir/GenomeAnalysisTK.jar \
+  -T ReadBackedPhasing \
+  -R $genomeFile \
+  `ls $inBamFiles | xargs -L 1 echo -I \\` \
+  --variant $inVcfFile \
+  --min_base_quality_score 20 \
+  -o $outVcfFile \

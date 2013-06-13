@@ -1,0 +1,72 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inFile" ]
+then
+  inFile=$1
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile="$2"
+fi
+if [ -z "$dbSnpVcfFile" ]
+then
+  dbSnpVcfFile="$3"
+fi
+if [ -z "$hapMapVcfFile" ]
+then
+  hapMapVcfFile="$4"
+fi
+if [ -z "$thousandGenomesVcfFile" ]
+then
+  thousandGenomesVcfFile="$5"
+fi
+if [ -z "$outFile" ]
+then
+  outFile=$6
+fi
+if [ -z "$stdOutFile" ]
+then
+  stdOutFile=$7
+fi
+
+source scripts/exome2/paths
+source scripts/create_temp_files
+
+function go {
+  echo Create recalibration files
+  java -Xmx22g -jar $gatkDir/GenomeAnalysisTK.jar \
+     -T VariantRecalibrator \
+     -R $genomeFastaFile \
+     -input $inFile \
+     --maxGaussians 6 \
+     -resource:dbsnp,known=true,training=false,truth=false,prior=8.0 $dbSnpVcfFile \
+     -resource:hapmap,known=false,training=true,truth=true,prior=15.0 $hapMapVcfFile \
+     -resource:omni,known=false,training=true,truth=false,prior=12.0 $thousandGenomesVcfFile \
+     -an QD -an HaplotypeScore -an MQRankSum -an ReadPosRankSum -an FS -an MQ -an InbreedingCoeff \
+     -mode SNP \
+     -recalFile $tmpFile1 \
+     -tranchesFile $tmpFile2
+
+  echo Apply recalibration
+  java -Xmx22g -jar $gatkDir/GenomeAnalysisTK.jar \
+     -T ApplyRecalibration \
+     -R $genomeFastaFile \
+     -input $inFile \
+     --ts_filter_level 99.0 \
+     -recalFile $tmpFile1 \
+     -tranchesFile $tmpFile2 \
+     -mode SNP \
+     -o $tmpFile3
+
+  echo Filtering SNPs by quality
+  scripts/exome2/filter_vcf_qual $tmpFile3 $outFile
+}
+
+go 2>&1 | tee $stdOutFile
+
+source scripts/delete_temp_files

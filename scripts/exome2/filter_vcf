@@ -1,0 +1,12 @@
+#!/bin/bash
+
+inVcfFile=$1
+positionIDFile=$2
+outVcfFile=$3
+
+source scripts/create_temp_files
+
+python2 code/FilterVcfFile.py $inVcfFile $positionIDFile $tmpFile1
+cp $tmpFile1 $outVcfFile
+
+source scripts/delete_temp_files

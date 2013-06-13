@@ -1,0 +1,49 @@
+#!/bin/bash
+
+source scripts/create_temp_files
+source scripts/exome2/paths
+
+if [ ! -f $thousandGenomesCommonVariantsFile ]
+then
+  echo Get thousand genomes variant frequencies
+  wget -O $thousandGenomesVariantsFile.gz $thousandGenomesVariantsRemoteFile
+  gunzip $thousandGenomesVariantsFile.gz
+  python2 code/PrintLinesNotStartingWith.py $thousandGenomesVariantsFile "#" > $tmpFile2
+  python2 code/FilterFile.py $tmpFile2 "max([0.0] + [float(y.split('=')[1]) for y in x[7].split(';') if '_AF' in y]) > 0.01" 0 $tmpFile1
+  python2 code/InsertColumnViaExpression.py $tmpFile1 "'chr' + x[0] + '__' + x[1]" $tmpFile2
+  python2 code/SelectColumns.py $tmpFile2 -1 $thousandGenomesCommonVariantsFile
+  python2 code/Uniquify.py $thousandGenomesCommonVariantsFile
+  rm $thousandGenomesVariantsFile
+fi
+
+if [ ! -f $dbSnpCommonVariantsFile ]
+then
+  echo Identify common variants
+  tail -n +2 $dbSnpUCSCFile > $tmpFile6
+  python2 code/InsertColumnViaExpression.py $tmpFile6 "x[0] + '__' + str(int(x[1]) + 1)" $tmpFile7
+  python2 code/SelectColumns.py $tmpFile7 3 $dbSnpCommonVariantsFile
+fi
+
+if [ ! -f $esp6500CommonVariantsFile ]
+then
+  mkdir -p $esp6500VariantsDir 
+  wget -O $esp6500PackagedFile $esp6500RemoteFile
+  currentDir=`pwd`
+  cd $esp6500VariantsDir
+  tar -zxvf $esp6500PackagedFile
+  rm $esp6500PackagedFile
+  cat ESP6500*snps_indels.txt > $tmpFile1
+  python2 ~/Pipeline/code/PrintLinesNotStartingWith.py $tmpFile1 "#" > $tmpFile2
+  python2 ~/Pipeline/code/ReplaceText.py $tmpFile2 " " "\t" $tmpFile1
+  python2 ~/Pipeline/code/SelectColumns.py $tmpFile1 0,7,-3 $tmpFile2
+  python2 ~/Pipeline/code/InsertColumnViaExpression.py $tmpFile2 "'chr%s__%s' % (x[0].split(':')[0], x[0].split(':')[1])" $tmpFile1
+  python2 ~/Pipeline/code/InsertColumnViaExpression.py $tmpFile1 "x[1].split('/')[0]" $tmpFile2
+  python2 ~/Pipeline/code/InsertColumnViaExpression.py $tmpFile2 "x[1].split('/')[1]" $tmpFile1
+  python2 ~/Pipeline/code/FilterFile.py $tmpFile1 "x[3] == 'PASS' and float(x[4]) > 1.0 or float(x[5]) > 1.0" 0 $tmpFile2
+  python2 ~/Pipeline/code/SelectColumns.py $tmpFile2 3 $esp6500CommonVariantsFile
+  python2 ~/Pipeline/code/Uniquify.py $esp6500CommonVariantsFile
+  rm -v *snps_indels.txt
+  cd $currentDir
+fi
+
+source scripts/delete_temp_files

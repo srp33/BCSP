@@ -7,40 +7,54 @@ filterValuesFilePathOrValue = sys.argv[3]
 numHeaderRows = int(sys.argv[4])
 outFilePath = sys.argv[5]
 
-print "Reading data from %s" % inFilePath
-data = utilities.readMatrixFromFile(inFilePath)
+negate = False
+if len(sys.argv) >= 7:
+    negate = sys.argv[6] == "True"
 
-headerRows = []
-for i in range(numHeaderRows):
-    headerRows.append(data.pop(0))
+def convertMatrixToText(matrix):
+    output = ""
+
+    for row in matrix:
+        output += "\t".join(row) + "\n"
+
+    return output
+
+def filterRows(rows):
+    if negate:
+        return [x for x in rows if x[filterColumnIndex] not in filterValues]
+    else:
+        return [x for x in rows if x[filterColumnIndex] in filterValues]
 
 if os.path.exists(filterValuesFilePathOrValue):
-    filterValues = [x.rstrip() for x in file(filterValuesFilePathOrValue)]
+    filterValues = set([x.strip() for x in file(filterValuesFilePathOrValue)])
 else:
-    filterValues = filterValuesFilePathOrValue.split(",")
+    filterValues = set(filterValuesFilePathOrValue.split(","))
     if len(filterValues) == 1:
         print "Warning: No file %s exists." % filterValues[0]
 
-print "Filtering data"
-values = [row[filterColumnIndex] for row in data]
-
-valueIndexDict = {}
-for x in enumerate(values):
-    index = x[0]
-    value = x[1]
-    valueIndexDict[value] = index
-
-indicesToKeep = [valueIndexDict[value] for value in filterValues if valueIndexDict.has_key(value)]
-missingFilterValues = [value for value in filterValues if not valueIndexDict.has_key(value)]
-print missingFilterValues
-
-data = [data[i] for i in indicesToKeep]
-print "%i rows remain after filtering" % len(data)
-
-print "Outputting data"
 outFile = open(outFilePath, 'w')
-for row in headerRows:
-    outFile.write("\t".join(row) + "\n")
-for row in data:
-    outFile.write("\t".join(row) + "\n")
+inFile = open(inFilePath)
+
+for i in range(numHeaderRows):
+    outFile.write(inFile.readline())
+
+lineCount = 0
+data = []
+for line in inFile:
+    lineCount += 1
+    lineItems = line.rstrip().split("\t")
+    data.append(lineItems)
+
+    if len(data) == 10000:
+        outFile.write(convertMatrixToText(filterRows(data)))
+        print lineCount
+        data = []
+
+if len(data) > 0:
+#    for x in data:
+#        print x[filterColumnIndex]
+    outFile.write(convertMatrixToText(filterRows(data)))
+    print lineCount
+
+inFile.close()
 outFile.close()

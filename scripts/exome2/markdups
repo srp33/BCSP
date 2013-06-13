@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$bamFile" ]
+then
+  bamFile=$1
+fi
+
+source scripts/exome2/paths
+
+echo Marking duplicates for $bamFile
+java -Xmx16g -jar $picardDir/MarkDuplicates.jar INPUT=$bamFile OUTPUT=${bamFile/\.bam/.mod.bam} METRICS_FILE=${bamFile/\.bam/_dup_metrics.txt} ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT
+mv ${bamFile/\.bam/.mod.bam} $bamFile

@@ -1,9 +1,27 @@
-BCSP
+Prerequisites
 ====
-Prerequisites: python, scipy/numpy, R, gdata (R package), e1071 (R package)
+  python (we used v2.6.6)
+  scipy/numpy
+  R
+    gdata package
+    e1071 package
+  FastQC
+  samtools-0.1.18
+  bamtools
+  bwa-0.6.1
+  GenomeAnalysisTK-1.5-3-gbb2c10b
+  GenomeAnalysisTK-2.3-4-g57ea19f
+  picard-tools-1.64
+  snpEff_3_1
+  dbNSFP2
 
-Download CEL files from GEO...and place them in the "raw" directory. Need to go into utah, ontario1, ontario2 subdirectories?
+Notes
+====
 
-May get slightly different results depending on version of scipy/numpy.
+Raw microarray files can be downloaded from GEO (GSE47682). Place them in the "raw" directory. They should be separated into subdirectories called utah, ontario1, and ontario2.
 
-Contact authors to get epidemiological data file if you want to renormalize from scratch.
+For the gene expression analyses, you may get slightly different results depending on version of scipy/numpy you use. However, the overall prediction accuracy should be similar.
+
+We identified genes whose expresson was correlated with demographic / clinical variables and excluded those (described in manuscript). The data file containing these variables is not here. Please contact the authors for a copy of that file.
+
+Please contact stephen.piccolo [at] hsc [dot] utah [dot] edu if you run into any problems.

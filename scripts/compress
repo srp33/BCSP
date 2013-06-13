@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+else
+  inFile="$1"
+fi
+
+echo Compressing $inFile
+rm -f $inFile.gz
+gzip $inFile
+echo Done

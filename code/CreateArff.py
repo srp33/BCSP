@@ -30,28 +30,20 @@ outFile.write("@relation data\n\n")
 if includeIDs:
     outFile.write("@attribute id string\n")
 
-for i in range(len(features)):
-    feature = features[i]
-    attributeType = "numeric"
-
-    values = [x[i+1] for x in data]
-    numeric = [x for x in values if utilities.isNumeric(x)]
-    if len(numeric) < float(len(values)) * 0.5:
-        attributeType = "{%s}" % ",".join(list(set(values)))
-
-    outFile.write("@attribute %s %s\n" % (feature.replace("'", "prime"), attributeType))
+for feature in features:
+    outFile.write("@attribute %s numeric\n" % feature.replace("'", "prime"))
 outFile.write("@attribute Class {%s}\n\n" % ",".join(list(set(patientClassDict.values()))))
 outFile.write("@data\n")
 
 for i in range(len(data)):
     row = data[i]
-    patientID = row.pop(0)
+    patientID = row.pop(0).replace(".", "-")
 
     if patientID == ignorePatientID or patientID not in patientClassDict.keys():
         continue
 
     if includeIDs:
-        row.insert(0, patientID.replace(".", "-"))
+        row.insert(0, patientID)
 
     row.append(patientClassDict[patientID])
     outFile.write(",".join(row) + "\n")

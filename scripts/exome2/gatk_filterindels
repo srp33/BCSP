@@ -1,0 +1,64 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$inFile" ]
+then
+  inFile=$1
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile="$2"
+fi
+if [ -z "$millsVcfFile" ]
+then
+  millsVcfFile="$3"
+fi
+if [ -z "$outFile" ]
+then
+  outFile=$4
+fi
+if [ -z "$stdOutFile" ]
+then
+  stdOutFile=$5
+fi
+
+source scripts/exome2/paths
+source scripts/create_temp_files
+
+function go {
+  echo Create recalibration files
+  java -Xmx22g -jar $gatkDir/GenomeAnalysisTK.jar \
+     -T VariantRecalibrator \
+     -R $genomeFastaFile \
+     -input $inFile \
+     --maxGaussians 4 \
+     -std 10.0 \
+     -percentBad 0.12 \
+     -resource:mills,known=true,training=true,truth=true,prior=12.0 $millsVcfFile \
+     -an QD -an FS -an HaplotypeScore -an ReadPosRankSum -an InbreedingCoeff \
+     -mode INDEL \
+     -recalFile $tmpFile1 \
+     -tranchesFile $tmpFile2
+
+  echo Apply recalibration
+  java -Xmx22g -jar $gatkDir/GenomeAnalysisTK.jar \
+     -T ApplyRecalibration \
+     -R $genomeFastaFile \
+     -input $inFile \
+     --ts_filter_level 95.0 \
+     -recalFile $tmpFile1 \
+     -tranchesFile $tmpFile2 \
+     -mode INDEL \
+     -o $outFile
+
+  echo Filtering indels by quality
+  scripts/exome2/filter_vcf_qual $outFile $outFile
+}
+
+go 2>&1 | tee $stdOutFile
+
+source scripts/delete_temp_files

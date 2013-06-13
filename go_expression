@@ -1,5 +1,0 @@
-#!/bin/bash
-
-./scripts/preprocess
-./scripts/mlflex
-./scripts/postprocess

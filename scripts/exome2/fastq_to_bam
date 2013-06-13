@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+else
+  dataDir=$1
+  genomeIndexName=$2
+  outputDir=$3
+  id=$4
+  inFileSuffix=$5
+fi
+
+if [ -f $outputDir/$id.bam ]
+then
+  echo Already processed $id
+  exit 0
+else
+  echo Need to process $id
+fi
+
+source scripts/exome2/paths
+
+for i in 1 2
+do
+  $bwaDir/bwa aln -t 8 $bwaDir/indices/$genomeIndexName $dataDir/${id}_${i}.${inFileSuffix} > $outputDir/${id}_${i}.sai &
+done
+wait
+
+$bwaDir/bwa sampe -P $bwaDir/indices/$genomeIndexName -r "@RG\tID:${id}\tLB:${id}\tPL:ILLUMINA\tSM:${id}" $outputDir/${id}_1.sai $outputDir/${id}_2.sai $dataDir/${id}_1.${inFileSuffix} $dataDir/${id}_2.${inFileSuffix} > $outputDir/${id}.sam
+
+rm -fv $dataDir/${id}_?.${inFileSuffix}
+
+$samToolsDir/samtools view -bS $outputDir/${id}.sam > $outputDir/${id}.bam
+
+rm -fv $outputDir/${id}_?.sai
+rm -fv $outputDir/${id}.sam
+
+scripts/exome2/filterbam $outputDir/${id}.bam
+scripts/exome2/sortbam $outputDir/${id}.bam
+scripts/exome2/markdups $outputDir/${id}.bam
+scripts/exome2/sortbam $outputDir/${id}.bam
+scripts/exome2/indexbam $outputDir/${id}.bam

@@ -1,0 +1,148 @@
+#!/bin/bash
+
+set -o errexit
+
+if [ -n "$PBS_O_WORKDIR" ]
+then
+  cd "$PBS_O_WORKDIR"
+fi
+
+if [ -z "$bamFile" ]
+then
+  bamFile="$1"
+fi
+if [ -z "$genomeFastaFile" ]
+then
+  genomeFastaFile="$2"
+fi
+if [ -z "$knownVcfFile" ]
+then
+  knownVcfFile="$3"
+fi
+if [ -z "$intervalsBedFile" ]
+then
+  intervalsBedFile="$4"
+fi
+if [ -z "$outBamFile" ]
+then
+  outBamFile="$5"
+fi
+if [ -z "$stdOutFile" ]
+then
+  stdOutFile=$6
+fi
+
+if [ -f $outBamFile ]
+then
+  echo $outBamFile has already been processed
+  exit 0
+fi
+
+source scripts/exome2/paths
+
+originalBamFile=$bamFile
+tmpLocation=`mktemp -p Temp`
+bamFile=$tmpLocation.bam
+inProgressFile=$originalBamFile.inprogress
+
+function cleanup
+{
+  rm -fv $inProgressFile
+  rm -rfv ${tmpLocation}*
+  exit 0
+}
+
+trap 'cleanup' TERM
+
+if [ -f $inProgressFile ]
+then
+  $originalBamFile already in progress
+  rm -rfv ${tmpLocation}*
+  exit 0
+fi
+
+touch $inProgressFile
+
+function go {
+##$samToolsDir/samtools view -h $originalBamFile | head -n 1000000 | $samToolsDir/samtools view -bS - > $bamFile
+##rm -fv $originalBamFile
+
+  echo Creating index
+  scripts/exome2/indexbam $originalBamFile
+
+  echo Cleaning reads
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -T PrintReads \
+    -R $genomeFastaFile \
+    -I $originalBamFile \
+    --read_filter UnmappedRead \
+    --read_filter DuplicateRead \
+    --read_filter MappingQualityZero \
+    --read_filter BadMate \
+    -nct 32 \
+    -o ${bamFile}
+
+#  rm -fv $originalBamFile
+#  rm -fv $originalBamFile.bai
+
+  echo Creating index
+  scripts/exome2/indexbam $bamFile
+
+  echo Creating realigned target file
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -T RealignerTargetCreator \
+    -R $genomeFastaFile \
+    -I $bamFile \
+    --known $knownVcfFile \
+    -o $bamFile.intervals
+
+  echo Performing Indel realignment on $bamFile
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -I $bamFile \
+    -R $genomeFastaFile \
+    -T IndelRealigner \
+    -targetIntervals $bamFile.intervals \
+    -known $knownVcfFile \
+    -LOD 0.4 \
+    -o ${bamFile}.tmp.bam
+
+  echo Performing base recalibration
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -I ${bamFile}.tmp.bam \
+    -R $genomeFastaFile \
+    -T BaseRecalibrator \
+    -knownSites $knownVcfFile \
+    -nct 32 \
+    -o ${bamFile}.recal.grp
+
+#cp -v ${bamFile}.tmp.bam $originalBamFile
+
+  echo Printing recalibrated reads
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -T PrintReads \
+    -R $genomeFastaFile \
+    -I ${bamFile}.tmp.bam \
+    --read_filter UnmappedRead \
+    --read_filter DuplicateRead \
+    --read_filter MappingQualityZero \
+    --read_filter BadMate \
+    -BQSR ${bamFile}.recal.grp \
+    -nct 32 \
+    -o $bamFile
+
+  echo Reindexing BAM
+  scripts/exome2/indexbam $bamFile
+
+  echo Reducing BAM
+  java -Xmx40g -jar $gatkDir/GenomeAnalysisTK.jar \
+    -T ReduceReads \
+    -R $genomeFastaFile \
+    -I $bamFile \
+    -L $intervalsBedFile \
+    -o $outBamFile
+
+  cleanup
+}
+
+go 2>&1 | tee $stdOutFile
+cleanup
