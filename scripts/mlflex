@@ -3,17 +3,22 @@
 cd ML-Flex
 
 function runExperiment {
-  java -Xmx4g -jar mlflex.jar ACTION=Reset EXPERIMENTS=${experiment} NUM_THREADS=1
-  java -Xmx4g -jar mlflex.jar ACTION=Process EXPERIMENTS=${experiment} NUM_THREADS=1 THREAD_TIMEOUT_MINUTES=5 PAUSE_SECONDS=1 DEBUG=false
+  java -Xmx4g -jar mlflex.jar ACTION=Reset EXPERIMENTS=$1 NUM_THREADS=1
+#  java -Xmx200g -jar mlflex.jar ACTION=Process EXPERIMENTS=$1 NUM_THREADS=6 THREAD_TIMEOUT_MINUTES=5 PAUSE_SECONDS=1 DEBUG=false
 }
 
 for i in 1 2
 do
-  runExperiment utahontario${i}
-  runExperiment utahontario${i}_Permute
-  runExperiment utahontario${i}_RepeatA
-  runExperiment utahontario${i}_BIOCARTA
-  runExperiment utahontario${i}_KEGG
-  runExperiment utahontario${i}_REACTOME
-  runExperiment utahontario${i}_SPathways
+#  runExperiment utahontario${i}
+#  runExperiment utahontario${i}_Permute
+#  runExperiment utahontario${i}_RepeatA
+#  runExperiment utahontario${i}_BIOCARTA
+#  runExperiment utahontario${i}_KEGG
+#  runExperiment utahontario${i}_REACTOME
+#  runExperiment utahontario${i}_SPathways
+
+  runExperiment utahontario${i}_AllPathways
+  runExperiment utahontario${i}_AllPathways_24vs35
+  runExperiment utahontario${i}_AllPathways_124vs35
 done
+
