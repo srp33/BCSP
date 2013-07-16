@@ -28,6 +28,8 @@ python2 code/SplitGmtToGeneSetFiles.py library/c2.cp.v3.0.entrez.gmt KEGG "genes
 
 # Create clinical files
 python2 code/CreateClassFile.py clinical/combined.annotation.txt 0 1 "Control=0,1,2,4;BRCACancer=3,5" clinical/combined.0124v35.txt
+python2 code/CreateClassFile.py clinical/combined.annotation.txt 0 1 "Control=1,2,4;BRCACancer=3,5" clinical/combined.124v35.txt
+python2 code/CreateClassFile.py clinical/combined.annotation.txt 0 1 "Control=2,4;BRCACancer=3,5" clinical/combined.24v35.txt
 python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 1 clinical/utah.samples.txt
 python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 2 clinical/ontario1.samples.txt
 python2 code/SelectColumnValues.py clinical/BatchInfo.Study.txt 0 2 3 clinical/ontario2.samples.txt
@@ -52,6 +54,8 @@ python2 code/BuildMatrixFile.py summarization/ontario2/ .gene.green.expr.txt Non
 
 # Create ARFF file with class information
 python2 code/CreateArff.py None clinical/combined.0124v35.txt None True ML-Flex/InputData/classes.0124v35.arff
+python2 code/CreateArff.py None clinical/combined.124v35.txt None True ML-Flex/InputData/classes.124v35.arff
+python2 code/CreateArff.py None clinical/combined.24v35.txt None True ML-Flex/InputData/classes.24v35.arff
 
 # Build matrix files for Utah and Ontario
 for validationCohort in ontario1 ontario2
