@@ -1,3 +1,0 @@
-Num Instances	20
-Num Features	1114
-Proportion Missing Values	0.0

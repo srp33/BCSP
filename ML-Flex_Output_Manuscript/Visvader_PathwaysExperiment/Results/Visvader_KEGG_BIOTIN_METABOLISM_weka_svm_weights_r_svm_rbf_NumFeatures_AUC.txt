@@ -1,2 +1,0 @@
-NumFeatures	2
-AUC	0.12

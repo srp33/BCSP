@@ -1,0 +1,22 @@
+# Measures of classification performance for each class (dependent variable).
+Metric	Result
+Number instances predicted as [BRCACancer]	28.0
+Number instances predicted as [BRCACancer] correctly	8.0
+Number instances predicted as [BRCACancer] incorrectly	20.0
+Number instances predicted as [Control]	50.0
+Number instances predicted as [Control] correctly	43.0
+Number instances predicted as [Control] incorrectly	7.0
+Proportion instances predicted as [BRCACancer]	0.35897436
+Proportion instances predicted as [BRCACancer] correctly	0.28571429
+Proportion instances predicted as [BRCACancer] incorrectly	0.71428571
+Proportion instances predicted as [Control]	0.64102564
+Proportion instances predicted as [Control] correctly	0.86
+Proportion instances predicted as [Control] incorrectly	0.14
+Number [BRCACancer] instances predicted correctly	8.0
+Number [BRCACancer] instances predicted incorrectly	7.0
+Number [Control] instances predicted correctly	43.0
+Number [Control] instances predicted incorrectly	20.0
+Proportion [BRCACancer] instances predicted correctly	0.53333333
+Proportion [BRCACancer] instances predicted incorrectly	0.46666667
+Proportion [Control] instances predicted correctly	0.68253968
+Proportion [Control] instances predicted incorrectly	0.31746032

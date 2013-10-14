@@ -18,9 +18,9 @@ def getMetadata(probeSequenceTabFilePath, probeSequenceTabColIndices):
         probe_seq = lineItems[probeSequenceTabColIndices[3]]
 
         # The following is for U133 arrays, which don't have standard probe IDs
-        if not probe_id.isdigit():
-            probe_interrogation_position = lineItems[probeSequenceTabColIndices[4]]
-            probe_id = probe_id + "#" + probe_interrogation_position
+        #if not probe_id.isdigit():
+            #probe_interrogation_position = lineItems[probeSequenceTabColIndices[4]]
+            #probe_id = probe_id + "#" + probe_interrogation_position
             #probe_id = probe_id + "#" + probe_coor_x + "_" + probe_coor_y
 
         probe2seq[probe_id] = probe_seq

@@ -1,2 +1,0 @@
-NumFeatures	25	50
-AUC	0.76	0.76

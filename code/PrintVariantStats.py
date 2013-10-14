@@ -8,9 +8,25 @@ inFile = open(inFilePath)
 headerItems = inFile.readline().rstrip().split("\t")
 sampleIndex = headerItems.index("SampleID")
 geneIndex = headerItems.index("GeneID")
+descriptionIndex = headerItems.index("Description")
 pathwaysIndex = headerItems.index("Pathways")
+positionIndex = headerItems.index("Position")
 
 data = [line.rstrip().split("\t") for line in inFile]
+
+sampleGeneVariantDict = {}
+for row in data:
+    sampleID = row[sampleIndex]
+    geneID = row[geneIndex]
+    position = row[positionIndex]
+
+    if sampleID not in sampleGeneVariantDict.keys():
+        sampleGeneVariantDict[sampleID] = {}
+
+    if geneID not in sampleGeneVariantDict[sampleID].keys():
+        sampleGeneVariantDict[sampleID][geneID] = []
+
+    sampleGeneVariantDict[sampleID][geneID].append(position)
 
 uniqueSamples = set([x[sampleIndex] for x in data])
 print "%i samples" % len(uniqueSamples)
@@ -32,6 +48,15 @@ print "%.1f genes with variant per sample" % utilities.calculateMean(numGenesMut
 numSamplesMutatedPerGene = [float(len(set([x[sampleIndex] for x in data if x[geneIndex]==gene]))) for gene in uniqueGenes]
 print "%.1f samples with variant per gene" % utilities.calculateMean(numSamplesMutatedPerGene)
 
+numMutatedPerGenePerSample = []
+for x in sampleGeneVariantDict.keys():
+    for geneID in sampleGeneVariantDict[x]:
+        numMutatedPerGenePerSample.append(float(len(sampleGeneVariantDict[x][geneID])))
+print "%.3f variants per gene when sample had at least one variant in gene" % utilities.calculateMean(numMutatedPerGenePerSample)
+
+numMutatedPerGenePerSample = [float(len(set([x[geneIndex] for x in data if x[sampleIndex]==sample]))) for sample in uniqueSamples]
+print "%.1f variants per genes with variant per sample" % utilities.calculateMean(numGenesMutatedPerSample)
+
 numSamplesPerPathway = []
 for pathway in uniquePathways:
     numSamplesPerPathway.append(float(len(set([row[sampleIndex] for row in data if pathway in row[pathwaysIndex]]))))
@@ -52,5 +77,11 @@ for sample in uniqueSamples:
         samplePathwayData = [x for x in sampleData if pathway in x[pathwaysIndex]]
         numVariantsPerSamplePerPathway.append(float(len(samplePathwayData)))
 print "%.3f variants per sample per pathway" % utilities.calculateMean(numVariantsPerSamplePerPathway)
+
+numHT = len([1 for x in data if x[descriptionIndex] == "HT"])
+numHR = len([1 for x in data if x[descriptionIndex] == "HR"])
+print "%i heterozygous variants" % numHT
+print "%i homozygous rare variants" % numHR
+print "%.2f%% heterozygous variants" % (float(numHT) * 100 / float(numHT + numHR))
 
 inFile.close()

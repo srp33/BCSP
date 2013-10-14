@@ -16,6 +16,8 @@ for inFilePath in glob.glob(inFilePattern):
         headerWritten = True
 
     for line in inFile:
+        if not line.endswith("\n"):
+            line += "\n"
         outFile.write(line)
 
     inFile.close()

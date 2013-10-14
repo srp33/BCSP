@@ -1,0 +1,8 @@
+35 samples
+4201 genes with at least one variant
+900 pathways with at least one variant
+193.8 genes with variant per sample
+1.6 samples with variant per gene
+10.2 samples with variant per pathway
+68.0 pathways with variant per sample
+0.443 variants per sample per pathway

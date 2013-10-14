@@ -1,8 +1,0 @@
-#!/bin/bash
-
-genomeFile=$1
-
-source scripts/exome/paths
-
-###$bwaDir/bwa index -p $bwaDir/indices/hg19 $genomeFile
-$samToolsDir/samtools faidx $genomeFile

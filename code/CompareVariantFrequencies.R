@@ -1,41 +1,57 @@
-library(gdata) # used for the trim function
+suppressPackageStartupMessages(library(gdata)) # used for the trim function
+suppressPackageStartupMessages(library(Exact))
 
 inFilePath1 = commandArgs()[7]
 inFilePath2 = commandArgs()[8]
 outFilePath = commandArgs()[9]
 
-data1 = read.table(inFilePath1, sep="\t", stringsAsFactors=FALSE, header=TRUE, row.names=NULL)
-data2 = read.table(inFilePath2, sep="\t", stringsAsFactors=FALSE, header=TRUE, row.names=NULL)
+data1 = read.table(inFilePath1, sep="\t", stringsAsFactors=FALSE, header=TRUE, row.names=1)
+data2 = read.table(inFilePath2, sep="\t", stringsAsFactors=FALSE, header=TRUE, row.names=1)
+data2 = data2[rownames(data1),]
 
-freqData = merge(data1, data2, by=1)
+stats = NULL
 
-cnames = colnames(freqData)
+for (i in 1:nrow(data1))
+{
+  data = rbind(as.integer(data1[i,3:4]), as.integer(data2[i,3:4]))
 
-freqData = apply(freqData, 1, function(x) {
-  data = rbind(c(as.integer(x[4]), as.integer(x[5])), c(as.integer(x[9]), as.integer(x[10])))
-  test.result = fisher.test(data, alternative="greater")
-  p = test.result$p.value
-  or = test.result$estimate
+  if (all(data[1,]==0) || all(data[2,]==0) || all(data[,1]==0) || all(data[,2]==0))
+  {
+    fisherP = NA
+    exactP = NA
+    fisherStat = "NA"
+    exactStat = "NA"
+  }
+  else {
+    fisher.result = fisher.test(data, alternative="greater")
+    exact.result = exact.test(data, alternative="greater", to.plot=FALSE)
 
-  if (or %in% c(Inf, -Inf, 0))
-    or = NA
+    fisherStat = fisher.result$estimate
+    if (fisherStat %in% c(Inf, -Inf, 0))
+      fisherStat = NA
 
-  c(x, or, p)
-})
+    exactStat = exact.result$test.statistic
 
-freqData = t(freqData)
+    fisherP = fisher.result$p.value
+    exactP = min(exact.result$p.value)
+  }
 
-cnames[2] = sub(".x", "", cnames[2]) # hack
-cnames = c(cnames, "Odds_Ratio", "Fisher_P")
-colnames(freqData) = cnames
+  stats = rbind(stats, c(fisherStat, fisherP, exactStat, exactP))
+}
 
-for (i in 1:ncol(freqData))
-  freqData[,i] = trim(freqData[,i])
+colnames(stats) = c("FisherOddsRatio", "Fisher_P", "ExactTestStatistic", "Exact_P")
+rownames(stats) = rownames(data1)
 
-freqData[,2] = paste(freqData[,2], freqData[,7], sep=";")
-freqData[,12] = as.numeric(freqData[,12])
-freqData[,13] = as.numeric(freqData[,13])
-freqData = freqData[order(freqData[,13], decreasing=FALSE),]
-freqData = freqData[,c(1,2,4,5,9,10,6,11,12,13)]
+outData = merge(data1, data2, by=0)
+outData = merge(outData, stats, by.x=1, by.y=0)
 
-write.table(freqData, outFilePath, sep="\t", row.names=FALSE, col.names=TRUE, quote=FALSE)
+colnames(outData)[2] = sub(".x", "", colnames(outData)[2])
+
+for (i in 1:ncol(outData))
+  outData[,i] = trim(outData[,i])
+
+outData[,2] = paste(outData[,2], outData[,7], sep=";")
+outData = outData[order(as.numeric(outData[,15]), decreasing=FALSE),]
+outData = outData[,c(1,2,4,5,9,10,6,11,12,13,14,15)]
+
+write.table(outData, outFilePath, sep="\t", row.names=FALSE, col.names=TRUE, quote=FALSE)

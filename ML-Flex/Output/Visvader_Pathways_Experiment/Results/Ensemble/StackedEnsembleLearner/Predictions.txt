@@ -1,0 +1,22 @@
+# Instance-level predictions produced via classification. Various ensemble-learning approaches were used for classification. See the README files for details.
+Instance_ID	Dependent_Variable_Value	Prediction	BRCA_Probability	Control_Probability
+GSM427158	Control	Control	0.0	1.0
+GSM427159	BRCA	Control	0.0	1.0
+GSM427160	BRCA	Control	0.0	1.0
+GSM427162	Control	BRCA	1.0	0.0
+GSM427163	BRCA	Control	0.0	1.0
+GSM427164	BRCA	BRCA	1.0	0.0
+GSM427165	BRCA	Control	0.0	1.0
+GSM427166	Control	BRCA	1.0	0.0
+GSM427167	BRCA	BRCA	1.0	0.0
+GSM427169	BRCA	BRCA	1.0	0.0
+GSM427170	BRCA	BRCA	1.0	0.0
+GSM427171	Control	Control	0.0	1.0
+GSM427172	Control	Control	0.0	1.0
+GSM427178	BRCA	BRCA	1.0	0.0
+GSM427181	BRCA	Control	0.0	1.0
+GSM427182	BRCA	BRCA	1.0	0.0
+GSM427183	BRCA	Control	0.0	1.0
+GSM427187	BRCA	Control	0.0	1.0
+GSM427189	BRCA	Control	0.0	1.0
+GSM427193	BRCA	BRCA	1.0	0.0

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+source scripts/create_temp_files
+
+groupDescription=$1
+subsetDescription=$2
+comparison=$3
+
+echo $1 -- $2 -- $3
+
+testInFile1="ML-Flex/Output/utahontario1_${groupDescription}_${comparison}_Experiment/Results/utahontario1.batch.${subsetDescription}/weka_svm_weights/r_svm_rbf/Predictions.txt"
+testInFile2=${testInFile1//ontario1/ontario2}
+trainInFile=${testInFile1//r_svm_rbf/r_svm_rbf\/Training_Data}
+
+# It doesn't do feature selection if there are less than 25 genes
+if [ ! -f $trainInFile ]
+then
+  testInFile1=${testInFile1/\/weka_svm_weights/}
+  testInFile2=${testInFile2/\/weka_svm_weights/}
+  trainInFile=${trainInFile/\/weka_svm_weights/}
+fi
+
+utahTestingOutFile=ML-Flex_Results/${comparison}/$groupDescription/UtahTraining/Predictions/$subsetDescription
+ontarioTestingOutFile=ML-Flex_Results/${comparison}/$groupDescription/OntarioTesting/Predictions/$subsetDescription
+allTestingOutFile=ML-Flex_Results/${comparison}/$groupDescription/AllTesting/Predictions/$subsetDescription
+allOutFile=ML-Flex_Results/${comparison}/$groupDescription/All/Predictions/$subsetDescription
+mainTestSamplesFile=clinical/ontario.$comparison.txt
+
+if [ ! -f $allOutFile ]
+then
+  mkdir -p `dirname $utahTestingOutFile` `dirname $ontarioTestingOutFile` `dirname $allTestingOutFile` `dirname $allOutFile`
+
+  tail -n +2 $trainInFile > $utahTestingOutFile
+  tail -n +2 $testInFile1 > $tmpFile1
+  tail -n +3 $testInFile2 > $tmpFile2
+  python code/FilterFile.py $tmpFile2 "x[0].startswith('Ontario__')" 0 $tmpFile3
+  cat $tmpFile1 $tmpFile3 > $allTestingOutFile
+
+  python code/SelectColumns.py $mainTestSamplesFile 0 $tmpFile1
+  python code/FilterFileByColumnValues.py $allTestingOutFile 0 $tmpFile1 1 $ontarioTestingOutFile
+
+  python code/HeaderCat2.py $utahTestingOutFile $allTestingOutFile $allOutFile
+fi

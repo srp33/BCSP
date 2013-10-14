@@ -1,0 +1,23 @@
+#!/bin/bash
+
+bamFile=$1
+genomeFile=$2
+
+source scripts/exome2/paths
+source scripts/create_temp_files
+
+intervalsFileRaw=library/Agilent_SureSelect_4PlusUTR.bed
+intervalsFile=library/Agilent_SureSelect_4PlusUTR_mod.bed
+
+if [ ! -f $intervalsFile ]
+then
+  $bamToolsFile header -in $bamFile > $tmpFile1
+  tail -n +3 $intervalsFileRaw > $tmpFile2
+  python26 code/SelectColumns.py $tmpFile2 0,1,2,5,3 $tmpFile3
+  cat $tmpFile1 $tmpFile3 > $tmpFile2
+  python26 code/RemoveBlankLines.py $tmpFile2 $intervalsFile
+fi
+
+java -Xmx16g -jar $picardDir/CalculateHsMetrics.jar INPUT=$bamFile OUTPUT=${bamFile/\.bam/.hsmetrics.txt} BAIT_INTERVALS=$intervalsFile TARGET_INTERVALS=$intervalsFile REFERENCE_SEQUENCE=$genomeFile VALIDATION_STRINGENCY=LENIENT
+
+source scripts/delete_temp_files

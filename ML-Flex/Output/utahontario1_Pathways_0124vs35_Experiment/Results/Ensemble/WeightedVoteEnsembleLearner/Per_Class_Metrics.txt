@@ -1,0 +1,22 @@
+# Measures of classification performance for each class (dependent variable). Various ensemble-learning approaches were used for classification. See the README files for details.
+Metric	Result
+Number instances predicted as [BRCACancer]	35.0
+Number instances predicted as [BRCACancer] correctly	12.0
+Number instances predicted as [BRCACancer] incorrectly	23.0
+Number instances predicted as [Control]	1.0
+Number instances predicted as [Control] correctly	0.0
+Number instances predicted as [Control] incorrectly	1.0
+Proportion instances predicted as [BRCACancer]	0.97222222
+Proportion instances predicted as [BRCACancer] correctly	0.34285714
+Proportion instances predicted as [BRCACancer] incorrectly	0.65714286
+Proportion instances predicted as [Control]	0.02777778
+Proportion instances predicted as [Control] correctly	0.0
+Proportion instances predicted as [Control] incorrectly	1.0
+Number [BRCACancer] instances predicted correctly	12.0
+Number [BRCACancer] instances predicted incorrectly	1.0
+Number [Control] instances predicted correctly	0.0
+Number [Control] instances predicted incorrectly	23.0
+Proportion [BRCACancer] instances predicted correctly	0.92307692
+Proportion [BRCACancer] instances predicted incorrectly	0.07692308
+Proportion [Control] instances predicted correctly	0.0
+Proportion [Control] instances predicted incorrectly	1.0

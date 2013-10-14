@@ -39,4 +39,10 @@ for key in sorted(data1Dict.keys()):
         for row1 in data1Dict[key]:
             for row2 in data2Dict[key]:
                 outFile.write("\t".join(row1 + row2) + "\n")
+    else:
+        if not data1Dict.has_key(key):
+            print "%s does not have %s key" % (inFilePath1, key)
+        if not data2Dict.has_key(key):
+            print "%s does not have %s key" % (inFilePath2, key)
+
 outFile.close()

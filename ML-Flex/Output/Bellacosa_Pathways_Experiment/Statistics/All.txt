@@ -1,0 +1,2 @@
+#Summary statistics describing all independent variable data.
+Subjects with data for at least 932 data category	18

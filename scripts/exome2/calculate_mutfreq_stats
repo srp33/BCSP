@@ -26,7 +26,9 @@ python2 code/CountMutatedSamples.py $variantsFile $entrezGenesFile None $gmtFile
 python2 code/CountMutatedSamples.py $variantsFile $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile $tmpFile6 $description2 672,675 $tmpFile2 $tmpFile4 &
 wait
 
+echo Comparing variant frequencies at gene level
 Rscript --vanilla code/CompareVariantFrequencies.R $tmpFile1 $tmpFile2 $outGeneFile &
+echo Comparing variant frequencies at pathway level
 Rscript --vanilla code/CompareVariantFrequencies.R $tmpFile3 $tmpFile4 $outPathwayFile &
 wait
 

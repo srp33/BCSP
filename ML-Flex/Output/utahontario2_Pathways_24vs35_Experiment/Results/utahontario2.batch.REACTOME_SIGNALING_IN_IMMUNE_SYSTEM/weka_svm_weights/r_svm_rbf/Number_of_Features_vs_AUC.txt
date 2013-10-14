@@ -1,0 +1,14 @@
+# For the top N features identified via feature selection, the AUC that resulted when N features were used for classification. Note that it is possible none of these AUC values will be equal to the AUC values in the performance metrics files because the 'best' number of features is selected in each cross-validation fold, whereas these values are calculated using the same number of features in each fold.
+Number of Features	AUC
+25	0.59470899
+50	0.5989418
+75	0.57671958
+100	0.56402116
+125	0.58941799
+150	0.58783069
+175	0.55873016
+200	0.55026455
+225	0.54920635
+250	0.57142857
+275	0.58994709
+300	0.58941799

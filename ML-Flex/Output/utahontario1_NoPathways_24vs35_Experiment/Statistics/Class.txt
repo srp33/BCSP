@@ -1,0 +1,9 @@
+# Summary statistics describing input data.
+Statistic	Value
+Num Instances	160
+Num Variables	1
+Proportion Missing Values	0.0
+Number [BRCACancer] instances	52
+Proportion [BRCACancer] instances	0.325
+Number [Control] instances	108
+Proportion [Control] instances	0.675

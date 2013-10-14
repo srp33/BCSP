@@ -1,0 +1,21 @@
+# The outer cross-validation fold to which each data instance was assigned.
+Fold 1 (1 instances): GSM427158
+Fold 2 (1 instances): GSM427159
+Fold 3 (1 instances): GSM427160
+Fold 4 (1 instances): GSM427162
+Fold 5 (1 instances): GSM427163
+Fold 6 (1 instances): GSM427164
+Fold 7 (1 instances): GSM427165
+Fold 8 (1 instances): GSM427166
+Fold 9 (1 instances): GSM427167
+Fold 10 (1 instances): GSM427169
+Fold 11 (1 instances): GSM427170
+Fold 12 (1 instances): GSM427171
+Fold 13 (1 instances): GSM427172
+Fold 14 (1 instances): GSM427178
+Fold 15 (1 instances): GSM427181
+Fold 17 (1 instances): GSM427183
+Fold 16 (1 instances): GSM427182
+Fold 19 (1 instances): GSM427189
+Fold 18 (1 instances): GSM427187
+Fold 20 (1 instances): GSM427193

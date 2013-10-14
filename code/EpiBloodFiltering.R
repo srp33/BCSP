@@ -10,7 +10,7 @@ blood = as.matrix(read.table(bloodFilePath, header=TRUE, sep='\t', row=1))
 ep = as.matrix(read.table(epiFilePath, sep='\t', header=T, row=1))
 #for (i in 1:ncol(ep)){m=mean(ep[,i],na.rm=T);ep[is.na(ep[,i]),i]=m} # replace missing ep values with mean
 ep = ep[,-c(9,10,19,24)] ### remove ContrAge1st, Pregnant, PeriodAge, Polyps
-ep = ep[-which(rownames(ep) %in% c("C10","G12")),]  ## incomplete data
+ep = ep[-which(rownames(ep) %in% c("Utah__C10","Utah__G12")),]  ## incomplete data
 
 data = read.table(dataFilePath, sep="\t", row.names=1, stringsAsFactors=FALSE, header=TRUE, quote="\"")
 

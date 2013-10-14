@@ -1,0 +1,29 @@
+# Measures of classification performance across all classes (dependent variables). The weighted average metrics were weighted by the class distribution. Cross-validation assignments were stratified by class, where possible.
+Metric	Result
+Weighted average AUC	0.5968254
+Weighted average F-Measure	0.70037911
+Weighted average true positive rate	0.67948718
+Weighted average false positive rate	0.53345543
+Weighted average sensitivity (recall)	0.67948718
+Total number correct	58
+Total number incorrect	20
+Accuracy	0.74358974
+Error rate	0.25641026
+Error rate expected by chance	0.19230769
+Improvement over error rate expected by chance	-0.06410256
+Kappa statistic	0.12398922
+Mean absolute error	0.47601832
+Mean prior absolute error	0.31538462
+Root mean squared error	0.47829139
+Root mean prior squared error	0.39418855
+Relative absolute error (%)	150.93263655
+Root relative squared error (%)	121.33568617
+Kononenko & Bratko information score (bits)	-57.59884015
+Kononenko & Bratko information score (bits / instance)	-0.73844667
+Kononenko & Bratko relative information score (%)	-7978.47327971
+Class complexity - order (bits)	55.1103914
+Class complexity - order (bits / instance)	0.70654348
+Class complexity - scheme (bits)	73.18877888
+Class complexity - scheme (bits / instance)	0.93831768
+Complexity improvement (bits)	-18.07838747
+Complexity improvement (bits / instance)	-0.2317742

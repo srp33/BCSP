@@ -1,4 +1,4 @@
-import os, sys, glob
+import os, sys, glob, math
 import utilities
 
 inFilePath = sys.argv[1]
@@ -28,7 +28,7 @@ for line in inFile:
     data.append(line.rstrip().split("\t"))
     linesRead += 1
 
-    if len(data) == 100000:
+    if len(data) == 10000:
         print "Data rows read: %i" % linesRead
         linesWritten += filterAndWrite(data)
         data = []

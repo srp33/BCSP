@@ -1,0 +1,9 @@
+# Summary statistics describing input data.
+Statistic	Value
+Num Instances	18
+Num Variables	1
+Proportion Missing Values	0.0
+Number [BRCA] instances	12
+Proportion [BRCA] instances	0.66666667
+Number [Control] instances	6
+Proportion [Control] instances	0.33333333

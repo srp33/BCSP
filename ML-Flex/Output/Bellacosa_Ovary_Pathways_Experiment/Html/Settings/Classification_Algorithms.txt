@@ -1,0 +1,14 @@
+# This file contains a line for each classification algorithm that can be used within ML-Flex. Each line has at least two entries: 1) a unique key to represent the algorithm and 2) a learner template key. The unique key is used within Experiment files to reference the specified algorithm. The learner template key references a value within Learner_Templates.txt so that ML-Flex knows how to invoke the algorithm. Most algorithms also contain a series of parameters that will be passed to the algorithm when it is invoked. These parameters are defined uniquely by each learner.
+
+weka_decision_tree;wekac;weka.classifiers.trees.RandomForest;-I;10;-K;0;-S;1
+
+##############################################
+# This is Quinlan's C.0 Decision Trees learner
+##############################################
+c50;c50;c5.0;sample
+
+###################################################
+# These learners are from the R statistical package
+# They are equipped only to handle continuous variables and/or discrete variables with two options. An error will be thrown if a discrete variable with 3+ options is used.
+###################################################
+r_svm_rbf;r;svm_radial

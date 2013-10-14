@@ -1,0 +1,22 @@
+# Measures of classification performance for each class (dependent variable).
+Metric	Result
+Number instances predicted as [BRCA]	17.0
+Number instances predicted as [BRCA] correctly	12.0
+Number instances predicted as [BRCA] incorrectly	5.0
+Number instances predicted as [Control]	1.0
+Number instances predicted as [Control] correctly	1.0
+Number instances predicted as [Control] incorrectly	0.0
+Proportion instances predicted as [BRCA]	0.94444444
+Proportion instances predicted as [BRCA] correctly	0.70588235
+Proportion instances predicted as [BRCA] incorrectly	0.29411765
+Proportion instances predicted as [Control]	0.05555556
+Proportion instances predicted as [Control] correctly	1.0
+Proportion instances predicted as [Control] incorrectly	0.0
+Number [BRCA] instances predicted correctly	12.0
+Number [BRCA] instances predicted incorrectly	0.0
+Number [Control] instances predicted correctly	1.0
+Number [Control] instances predicted incorrectly	5.0
+Proportion [BRCA] instances predicted correctly	1.0
+Proportion [BRCA] instances predicted incorrectly	0.0
+Proportion [Control] instances predicted correctly	0.16666667
+Proportion [Control] instances predicted incorrectly	0.83333333

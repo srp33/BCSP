@@ -5,7 +5,8 @@ inDirPath = sys.argv[1]
 inFilePattern = sys.argv[2]
 variablesFilePath = sys.argv[3]
 dataValueIndex = int(sys.argv[4])
-outFilePath = sys.argv[5]
+outPatientPrefix = sys.argv[5]
+outFilePath = sys.argv[6]
 
 patientIDs = utilities.getPatientIDs(inDirPath, inFilePattern)
 
@@ -16,7 +17,7 @@ if variablesFilePath != "None":
 patientsKeyValuesDict = utilities.getPatientsKeyValuesDict(inDirPath, patientIDs, inFilePattern, dataValueIndex, variables)
 
 outFile = open(outFilePath, 'w')
-outFile.write("\t".join(["Key"] + patientIDs) + "\n")
+outFile.write("\t".join(["Key"] + [outPatientPrefix + patientID for patientID in patientIDs]) + "\n")
 
 if variables == None:
     keys = sorted(patientsKeyValuesDict[patientIDs[0]].keys())

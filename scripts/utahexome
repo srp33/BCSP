@@ -1,289 +1,126 @@
 #!/bin/bash
 
-source scripts/exome/paths
+source scripts/exome2/paths
 
 currentDir=`pwd`
-dataDir=UtahExomeData
+dataDir=compute/BCSP_Exome2
 outputDir=$dataDir/Output
 sampleMapFile=misc/BCSP_Exome_Sample_Map.txt
-inExpressionFile=matrices/utahontario1.batch.txt
-modExpressionFile=$outputDir/expression.txt
-hsMetricsFile=$outputDir/all.hsmetrics.txt
-tcgaOutputDir=TCGAExomeData/Output
-gmtFiles=genesets/c2.cp.v3.0.entrez.minuskegg.gmt,genesets/kegg.gmt
+tcgaOutputDir=compute/TCGA/Breast/DNA/Germline/Output
+gmtFiles=library/all_pathways.gmt
 entrezGenesFile=$outputDir/EntrezGenes.txt
-
-mkdir -p $outputDir
 
 source scripts/create_temp_files
 
-scripts/exome/parse_meta_files
-python2 code/SelectColumns.py $entrezGenePositionsFile 0 $entrezGenesFile
-python2 code/CreateGmtFileFromIDs.py "genesets/kegg_gene_ids/*.gene.ids.txt" genesets/kegg.gmt
-
-function createModExpressionFile {
-  inFile=$1
-  outFile=$2
-
-  python2 code/TransposeData.py $inFile $tmpFile1
-  head -n 1 $tmpFile1 > $tmpFile2
-  python2 code/ReplaceText.py $tmpFile2 "\n" "" $tmpFile3
-  tail -n +2 $tmpFile1 > $tmpFile4
-  echo -e "\tIndex\tSampleID\tFamily" > $tmpFile5
-  cat $tmpFile3 $tmpFile5 > $tmpFile6
-  python2 code/InnerJoin.py $tmpFile4 $sampleMapFile 0 3 $tmpFile1 True
-  cat $tmpFile6 $tmpFile1 > $tmpFile2
-  sampleIDColumnIndex=`python2 code/PrintNumColumns.py $tmpFile2`
-  sampleIDColumnIndex=$((sampleIDColumnIndex-2))
-  python2 code/SelectColumns.py $tmpFile2 $sampleIDColumnIndex,1to$((sampleIDColumnIndex-2)) $outFile
-}
+#scripts/exome/parse_meta_files
+#python2 code/SelectColumns.py $entrezGenePositionsFile 0 $entrezGenesFile
 
 controlSamplesFile=$outputDir/ControlSamples.txt
 cancerSamplesFile=$outputDir/CancerSamples.txt
 
 #python2 code/FilterFile.py $sampleMapFile "x[2] in ('2','4')" 0 $tmpFile1
 #python2 code/FilterFile.py $sampleMapFile "x[2] in ('3','5')" 0 $tmpFile2
-#python2 code/SelectColumns.py $tmpFile1 1 $controlSamplesFile
-#python2 code/SelectColumns.py $tmpFile2 1 $cancerSamplesFile
+#python2 code/SelectColumns.py $tmpFile1 3 $controlSamplesFile
+#python2 code/SelectColumns.py $tmpFile2 3 $cancerSamplesFile
 
-# Change sample IDs to the IDs that were used in the exome sequencing data
-#createModExpressionFile $inExpressionFile $modExpressionFile
-
-##for f in $dataDir/8929X*.txt.gz
-##do
-##  qsub scripts/decompress -l nodes=1:ppn=1,pmem=1gb,walltime=1:00:00 -N process -q batch -v inFile=$f
-##done
-
-##for f in $dataDir/8929X*.txt
-##do
-##  python2 code/IsFastqInSangerFormat.py $f
-##done
-
-##for f in $dataDir/8929X*.txt
-##do
-##  qsub scripts/compress -l nodes=1:ppn=1,pmem=1gb,walltime=4:00:00 -N process -q batch -v inFile=$f
-##done
-
-##for f in $dataDir/*.txt.gz
-##do
-##  qsub scripts/preparefastq -l nodes=1:ppn=1,pmem=2gb,walltime=4:00:00 -N process -q batch -v inGzFile=$f
-##done
-
-#scripts/exome/preparegenome $genomeFile
-
-#for id in 8929X1_120217_SN141_0457_BD0M4JACXX_4 8929X2_120217_SN141_0457_BD0M4JACXX_4 8929X3_120217_SN141_0457_BD0M4JACXX_4 8929X4_120217_SN141_0457_BD0M4JACXX_4 8929X5_120217_SN141_0457_BD0M4JACXX_4 8929X6_120217_SN141_0457_BD0M4JACXX_5 8929X7_120217_SN141_0457_BD0M4JACXX_5 8929X8_120217_SN141_0457_BD0M4JACXX_5 8929X9_120217_SN141_0457_BD0M4JACXX_5 8929X10_120217_SN141_0457_BD0M4JACXX_5 8929X11_120322_SN141_0495_BC0K0TACXX_3 8929X12_120322_SN141_0495_BC0K0TACXX_3 8929X13_120322_SN141_0495_BC0K0TACXX_3 8929X14_120322_SN141_0495_BC0K0TACXX_3 8929X15_120322_SN141_0495_BC0K0TACXX_3 8929X16_120322_SN141_0495_BC0K0TACXX_4 8929X17_120322_SN141_0495_BC0K0TACXX_4 8929X18_120322_SN141_0495_BC0K0TACXX_4 8929X19_120322_SN141_0495_BC0K0TACXX_4 8929X20_120322_SN141_0495_BC0K0TACXX_4 8929X21_120322_SN141_0495_BC0K0TACXX_5 8929X22_120322_SN141_0495_BC0K0TACXX_5 8929X23_120322_SN141_0495_BC0K0TACXX_5 8929X24_120322_SN141_0495_BC0K0TACXX_5 8929X25_120322_SN141_0495_BC0K0TACXX_5 8929X26_120327_SN1117_0083_BD0TKCACXX_4 8929X27_120327_SN1117_0083_BD0TKCACXX_4 8929X28_120327_SN1117_0083_BD0TKCACXX_4 8929X29_120327_SN1117_0083_BD0TKCACXX_4 8929X30_120327_SN1117_0083_BD0TKCACXX_4 8929X31_120327_SN1117_0083_BD0TKCACXX_5 8929X32_120327_SN1117_0083_BD0TKCACXX_5 8929X33_120327_SN1117_0083_BD0TKCACXX_5 8929X34_120327_SN1117_0083_BD0TKCACXX_5 8929X35_120327_SN1117_0083_BD0TKCACXX_5
+# Find samples that need to be processed
+#for f in $dataDir/8929X*_1.txt
 #do
-#  outFile=~/compute/BCSP_Exome/Output/$id.bam
-#
-#  if [ ! -f $outFile ]
-#  then
-#    cp -v ~/fsl_archive/BCSP_Exome/$id*.txt.gz ~/compute/BCSP_Exome/
-#    gunzip ~/compute/BCSP_Exome/$id*.txt.gz
-#    qsub scripts/exome/buildbam -l nodes=1:ppn=1,pmem=24gb,walltime=12:00:00 -N process -q batch -v dataDir=$dataDir,outputDir=$outputDir,id=$id,inFileSuffix=txt
-#  fi
+#  echo `basename ${f/_1.txt/}` >> $tmpFile15
+#done
+#cat $tmpFile15 | parallel --max-procs 6 scripts/exome2/fastq_to_bam $dataDir $outputDir {} txt
+
+#ls $outputDir/*.bam | parallel --max-procs 6 scripts/exome2/gatk_pre {} $genomehg19FastaFile $genomehg19dbSnpVcfFile $entrezGenehg19BedFile {.}.reduced {.}.out
+
+#for f in $outputDir/*reduced
+#do
+#  mv $f $f.bam
 #done
 
 #for f in $outputDir/*.bam
 #do
-#  qsub scripts/exome/filterbam -l nodes=1:ppn=1,pmem=6gb,walltime=2:00:00 -N process -q batch -v bamFile=$f
+#  scripts/exome2/calcstats $f $genomehg19FastaFile
 #done
 
-#for f in $outputDir/*.bam
-#do
-#  qsub scripts/exome/sortbam -l nodes=1:ppn=1,pmem=24gb,walltime=4:00:00 -N process -q batch -v bamFile=$f,markDuplicates=TRUE
-#done
-
-#qsub scripts/exome/callsnps_gatk1 -l nodes=1:ppn=1,pmem=16gb,walltime=144:00:00 -N process -q batch -v inBamFiles="$outputDir/*.bam",outIntervalsFile="$referenceVariantDir/dbsnp.output.intervals"
-
-#for bamFile in $outputDir/*.bam
-#do
-#  qsub scripts/exome/callsnps_gatk2 -l nodes=1:ppn=1,pmem=8gb,walltime=24:00:00 -N process -q batch -v bamFile=$bamFile,intervalsFile=$referenceVariantDir/dbsnp.output.intervals
-#done
-
-#for f in $outputDir/*.bam
-#do
-#  qsub scripts/exome/sortbam -l nodes=1:ppn=1,pmem=4gb,walltime=2:00:00 -N process -q batch -v bamFile=$f,markDuplicates=FALSE
-#done
-
-#for f in $outputDir/*.bam
-#do
-#  qsub scripts/exome/calcstats -l nodes=1:ppn=1,pmem=16gb,walltime=2:00:00 -N process -q batch -v bamFile=$f
-#done
-
-#rm -f $hsMetricsFile
-#for f in $outputDir/*hsmetrics.txt
-#do
-#  echo $f
-#  python2 code/RemoveBlankLines.py $f $tmpFile1
-#  python2 code/PrintLinesNotStartingWith.py $tmpFile1 "#" > $tmpFile2
-#
-#  if [ ! -f $hsMetricsFile ]
-#  then
-#    cp $tmpFile2 $hsMetricsFile
-#  else
-#    tail -n 1 $tmpFile2 > $tmpFile3
-#    cat $hsMetricsFile $tmpFile3 > $tmpFile4
-#    cp $tmpFile4 $hsMetricsFile
-#  fi
-#done
-
-#qsub scripts/exome/callsnps_gatk3 -l nodes=1:ppn=1,pmem=16gb,walltime=72:00:00 -N process -q batch -v inBamFiles="$outputDir/*.bam",glm=SNP,outFile=$outputDir/gatk.snps.vcf
-#qsub scripts/exome/callsnps_gatk3 -l nodes=1:ppn=1,pmem=16gb,walltime=72:00:00 -N process -q batch -v inBamFiles="$outputDir/*.bam",glm=INDEL,outFile=$outputDir/gatk.indels.vcf
-
-#qsub scripts/exome/callsnps_gatk4 -l nodes=1:ppn=1,pmem=12gb,walltime=12:00:00 -N process -q batch -v inFilePath=$outputDir/gatk.snps.vcf,filter="-an QD -an HaplotypeScore -an MQRankSum -an ReadPosRankSum -an FS -an MQ -an InbreedingCoeff",outFilePath=$outputDir/gatk.recalibrated.snps.vcf,recalFilePath=$outputDir/gatk.recal,tranchesFilePath=$outputDir/gatk.tranches,rPlotFilePath=$outputDir/gatk.variantrecalibrator.plots.R
-
-#python2 code/PrintLinesStartingWith.py $outputDir/gatk.recalibrated.snps.vcf "#" > $tmpFile1
-#python2 code/PrintLinesNotStartingWith.py $outputDir/gatk.recalibrated.snps.vcf "#" > $tmpFile2
-#python2 code/FilterFile.py $tmpFile2 "float(x[5]) >= 100.0 and x[6]=='PASS'" 0 $tmpFile3
-#cat $tmpFile1 $tmpFile3 > $outputDir/gatk.recalibrated.snps.vcf
-
-#qsub scripts/exome/callsnps_gatk5 -l nodes=1:ppn=1,pmem=12gb,walltime=12:00:00 -N process -q batch -v inVcfFile=$outputDir/gatk.indels.vcf,outVcfFile=$outputDir/gatk.indels.filtered.vcf
-#python2 code/PrintLinesStartingWith.py $outputDir/gatk.indels.filtered.vcf "#" > $tmpFile1
-#python2 code/PrintLinesNotStartingWith.py $outputDir/gatk.indels.filtered.vcf "#" > $tmpFile2
-#python2 code/FilterFile.py $tmpFile2 "float(x[5]) >= 100.0 and x[6]=='PASS'" 0 $tmpFile3
-#cat $tmpFile1 $tmpFile3 > $outputDir/gatk.indels.filtered.vcf
-
-#qsub scripts/exome/callsnps_gatk6 -l nodes=1:ppn=1,pmem=8gb,walltime=72:00:00 -N process -q batch -v inBamFiles="$outputDir/*.bam",inVcfFile=$outputDir/gatk.recalibrated.snps.vcf,outVcfFile=$outputDir/gatk.recalibrated.phased.snps.vcf
-
-#wc -l $outputDir/gatk.snps.vcf
-#wc -l $outputDir/gatk.recalibrated.snps.vcf
-#wc -l $outputDir/gatk.recalibrated.phased.snps.vcf
-
-#scripts/exome/annotate_function $outputDir/gatk.recalibrated.phased.snps.vcf hg19 FALSE $outputDir/gatk.snps.annotated.function.all.vcf
-#scripts/exome/annotate_conservation $outputDir/gatk.snps.annotated.function.all.vcf $outputDir/gatk.snps.annotated.all.vcf
-#rm -f $outputDir/gatk.snps.annotated.function.all.vcf
-#scripts/exome/annotate_function $outputDir/gatk.indels.filtered.vcf hg19 FALSE $outputDir/gatk.indels.annotated.all.vcf
-
-#scripts/exome/annotate_function $outputDir/gatk.recalibrated.phased.snps.vcf hg19 TRUE $outputDir/gatk.snps.annotated.function.vcf
-#scripts/exome/annotate_conservation $outputDir/gatk.snps.annotated.function.vcf $outputDir/gatk.snps.annotated.vcf
-#rm -f $outputDir/gatk.snps.annotated.function.vcf
-#scripts/exome/annotate_function $outputDir/gatk.indels.filtered.vcf hg19 TRUE $outputDir/gatk.indels.annotated.vcf
-
-#python2 code/CalculateVariantFrequencies.py $outputDir/gatk.snps.annotated.all.vcf $outputDir/SNP.Frequencies.txt $outputDir/SNP.All.Summary.txt &
-#python2 code/CalculateVariantFrequencies.py $outputDir/gatk.indels.annotated.all.vcf $outputDir/INDEL.Frequencies.txt $outputDir/INDEL.All.Summary.txt &
+#scripts/exome2/gatk_callvariants "$outputDir/*reduced.bam" $genomehg19FastaFile $genomehg19dbSnpVcfFile SNP $entrezGenehg19BedFile 16 $outputDir/snps.vcf $outputDir/gatk_callsnps.out &
+#scripts/exome2/gatk_callvariants "$outputDir/*reduced.bam" $genomehg19FastaFile $genomehg19dbSnpVcfFile INDEL $entrezGenehg19BedFile 16 $outputDir/indels.vcf $outputDir/gatk_callindels.out &
 #wait
 
+#scripts/exome2/gatk_filtersnps $outputDir/snps.vcf $genomehg19FastaFile $genomehg19dbSnpVcfFile $genomehg19HapMapVcfFile $genomehg19ThousandGenomesVcfFile $outputDir/snps.filtered.vcf $outputDir/gatk_filtersnps.out
+#scripts/exome2/gatk_filterindels $outputDir/indels.vcf $genomehg19FastaFile $genomehg19MillsVcfFile $outputDir/indels.filtered.vcf $outputDir/gatk_filterindels.out
+
+#scripts/exome2/annotate_function $outputDir/snps.filtered.vcf hg19 TRUE $outputDir/snps.annotated.function.vcf
+#scripts/exome2/annotate_function $outputDir/indels.filtered.vcf hg19 TRUE $outputDir/indels.annotated.vcf
+#scripts/exome2/annotate_function $outputDir/snps.filtered.vcf hg19 FALSE $outputDir/snps.annotated.function.all.vcf
+#scripts/exome2/annotate_function $outputDir/indels.filtered.vcf hg19 FALSE $outputDir/indels.annotated.all.vcf
+
+#scripts/exome2/annotate_conservation $outputDir/snps.annotated.function.vcf $outputDir/snps.annotated.vcf
+#scripts/exome2/annotate_conservation $outputDir/snps.annotated.function.all.vcf $outputDir/snps.annotated.all.vcf
+
+#python2 code/CalculateVariantFrequencies.py $outputDir/snps.annotated.all.vcf $outputDir/SNP.Frequencies.txt $outputDir/SNP.All.Summary.txt
+#python2 code/CalculateVariantFrequencies.py $outputDir/indels.annotated.all.vcf $outputDir/INDEL.Frequencies.txt $outputDir/INDEL.All.Summary.txt
 #python2 code/FilterFile.py $outputDir/SNP.Frequencies.txt "float(x[1]) == 0.0 or float(x[1]) > 0.15" 0 $tmpFile1
 #python2 code/SelectColumns.py $tmpFile1 0 $outputDir/SNP.Common.txt
 #python2 code/FilterFile.py $outputDir/INDEL.Frequencies.txt "float(x[1]) == 0.0 or float(x[1]) > 0.15" 0 $tmpFile1
 #python2 code/SelectColumns.py $tmpFile1 0 $outputDir/INDEL.Common.txt
 
-#scripts/exome/filter_vcf $outputDir/gatk.snps.annotated.all.vcf $thousandGenomesCommonVariantsFile $outputDir/gatk.snps.annotated.all.filtered.1kG.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.snps.annotated.all.filtered.1kG.vcf $esp6500CommonVariantsFile $outputDir/gatk.snps.annotated.all.filtered.ESP.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.snps.annotated.all.filtered.ESP.vcf $tcgaOutputDir/SNP.Common.txt $outputDir/gatk.snps.annotated.all.filtered.TCGA.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.snps.annotated.all.filtered.TCGA.vcf $outputDir/SNP.Common.txt $outputDir/gatk.snps.annotated.all.filtered.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.indels.annotated.all.vcf $thousandGenomesCommonVariantsFile $outputDir/gatk.indels.annotated.all.filtered.1kG.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.indels.annotated.all.filtered.1kG.vcf $esp6500CommonVariantsFile $outputDir/gatk.indels.annotated.all.filtered.ESP.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.indels.annotated.all.filtered.ESP.vcf $tcgaOutputDir/INDEL.Common.txt $outputDir/gatk.indels.annotated.all.filtered.TCGA.vcf
-#scripts/exome/filter_vcf $outputDir/gatk.indels.annotated.all.filtered.TCGA.vcf $outputDir/INDEL.Common.txt $outputDir/gatk.indels.annotated.all.filtered.vcf
+#scripts/exome2/filter_vcf $outputDir/snps.annotated.all.vcf $thousandGenomesCommonVariantsFile $outputDir/snps.annotated.all.filtered.1kG.vcf
+#scripts/exome2/filter_vcf $outputDir/snps.annotated.all.filtered.1kG.vcf $esp6500CommonVariantsFile $outputDir/snps.annotated.all.filtered.ESP.vcf
+#scripts/exome2/filter_vcf $outputDir/snps.annotated.all.filtered.ESP.vcf $tcgaOutputDir/SNP.Common.txt $outputDir/snps.annotated.all.filtered.TCGA.vcf
+#scripts/exome2/filter_vcf $outputDir/snps.annotated.all.filtered.TCGA.vcf $outputDir/SNP.Common.txt $outputDir/snps.annotated.all.filtered.vcf
+#scripts/exome2/filter_vcf $outputDir/indels.annotated.all.vcf $thousandGenomesCommonVariantsFile $outputDir/indels.annotated.all.filtered.1kG.vcf
+#scripts/exome2/filter_vcf $outputDir/indels.annotated.all.filtered.1kG.vcf $esp6500CommonVariantsFile $outputDir/indels.annotated.all.filtered.ESP.vcf
+#scripts/exome2/filter_vcf $outputDir/indels.annotated.all.filtered.ESP.vcf $tcgaOutputDir/INDEL.Common.txt $outputDir/indels.annotated.all.filtered.TCGA.vcf
+#scripts/exome2/filter_vcf $outputDir/indels.annotated.all.filtered.TCGA.vcf $outputDir/INDEL.Common.txt $outputDir/indels.annotated.all.filtered.vcf
 
-#python2 code/PrintLinesNotStartingWith.py $outputDir/gatk.snps.annotated.all.filtered.vcf "#" | wc -l
-#python2 code/PrintLinesNotStartingWith.py $outputDir/gatk.indels.annotated.all.filtered.vcf "#" | wc -l
+## Number of variants after all GATK processing
+#python2 code/PrintLinesNotStartingWith.py $outputDir/snps.filtered.vcf "#" | wc -l
+#python2 code/PrintLinesNotStartingWith.py $outputDir/indels.filtered.vcf "#" | wc -l
+##830317
+##111190
 
-#python2 code/AnnotateVcfWithGenesPathways.py $outputDir/gatk.snps.annotated.all.filtered.vcf $entrezGenePositionsFile $entrezGeneSymbolsFile $entrezGeneStrandFile $gmtFiles,genesets/BRCA_Genes.gmt $outputDir/SNPs.InExons.bed $outputDir/SNPs.NotInExons.bed $outputDir/snps.final.vcf
-#python2 code/AnnotateVcfWithGenesPathways.py $outputDir/gatk.indels.annotated.all.filtered.vcf $entrezGenePositionsFile $entrezGeneSymbolsFile $entrezGeneStrandFile $gmtFiles,genesets/BRCA_Genes.gmt $outputDir/INDELs.InExons.bed $outputDir/INDELs.NotInExons.bed $outputDir/indels.final.vcf
+## Number of variants before TCGA filtering
+#python2 code/PrintLinesNotStartingWith.py $outputDir/snps.annotated.all.filtered.ESP.vcf "#" | wc -l
+#python2 code/PrintLinesNotStartingWith.py $outputDir/indels.annotated.all.filtered.ESP.vcf "#" | wc -l
+##64557
+##63095
 
-#python2 code/PrintLinesNotStartingWith.py $outputDir/snps.final.vcf "#" | wc -l
-#python2 code/PrintLinesNotStartingWith.py $outputDir/indels.final.vcf "#" | wc -l
+## Number of variants after TCGA filtering
+#python2 code/PrintLinesNotStartingWith.py $outputDir/snps.annotated.all.filtered.TCGA.vcf "#" | wc -l
+#python2 code/PrintLinesNotStartingWith.py $outputDir/indels.annotated.all.filtered.TCGA.vcf "#" | wc -l
+##56956 (11.8%)
+##14642 (76.8%)
 
+## Number of variants after local filtering
+#python2 code/PrintLinesNotStartingWith.py $outputDir/snps.annotated.all.filtered.vcf "#" | wc -l
+#python2 code/PrintLinesNotStartingWith.py $outputDir/indels.annotated.all.filtered.vcf "#" | wc -l
+##52678 (7.5%)
+##5830 (60.2%)
+
+#python2 code/AnnotateVcfWithGenesPathways.py $outputDir/snps.annotated.all.filtered.vcf $entrezGenePositionsFile $entrezGeneSymbolsFile $entrezGeneStrandFile $gmtFiles,genesets/BRCA_Genes.gmt $outputDir/SNPs.InExons.bed $outputDir/SNPs.NotInExons.bed $outputDir/snps.final.vcf
+#python2 code/AnnotateVcfWithGenesPathways.py $outputDir/indels.annotated.all.filtered.vcf $entrezGenePositionsFile $entrezGeneSymbolsFile $entrezGeneStrandFile $gmtFiles,genesets/BRCA_Genes.gmt $outputDir/INDELs.InExons.bed $outputDir/INDELs.NotInExons.bed $outputDir/indels.final.vcf
 #python2 code/ConvertVcfToVariants.py $outputDir/snps.final.vcf,$outputDir/indels.final.vcf MODERATE,HIGH $outputDir/Variants.txt $outputDir/Final.Summary.txt
 
-#python2 code/PrintVariantStats.py $outputDir/Variants.txt
-
-#rm -fv $outputDir/*MutFreq*
+#python2 code/ReplaceIDs.py $outputDir/Variants.txt $sampleMapFile $outputDir/Variants.txt
 
 #python2 code/SelectColumns.py $entrezGenePositionsFile 0 $tmpFile9
 #python2 code/CountMutatedSamples.py $outputDir/Variants.txt $tmpFile9 None $gmtFiles $entrezGeneSymbolsFile None All None $outputDir/Gene.MutFreq.txt $outputDir/Pathway.MutFreq.txt
 
-#rm -rf $tmpDir/*
-#for threshold in `seq 0.002 0.002 0.100`
-#do
-#  echo Threshold is $threshold
-#
-#  python2 code/FilterFile.py $tcgaOutputDir/Gene.MutFreq.txt "float(x[-1]) < $threshold or x[0] in ('672', '675')" 1 $tmpFile3
-#  python2 code/SelectColumns.py $tmpFile3 0 $tmpFile4
-#  tail -n +2 $tmpFile4 > $tmpFile3
-#  python2 code/Uniquify.py $tmpFile3
-#  python2 code/FilterFileByColumnValues.py $outputDir/Variants.txt 6 $tmpFile3 1 $tmpFile10
-#
-#  outPathwayFile=$outputDir/Pathway.MutFreq.Stats.$threshold.txt
-#  scripts/exome/calculate_mutfreq_stats $tmpFile10 $entrezGenesFile $entrezGeneSymbolsFile $gmtFiles $controlSamplesFile $cancerSamplesFile UtahControl UtahCancer $outputDir/Gene.MutFreq.Stats.$threshold.txt $outPathwayFile False
-#
-#  python2 code/SelectColumns.py $outPathwayFile 0,-1 $tmpFile1
-#  tail -n +2 $tmpFile1 > $tmpDir/$threshold
-#  python2 code/ReplaceText.py $tmpDir/$threshold NaN NA $tmpDir/$threshold
-#done
+## Number of genes and pathways with at least one variant before gene-level filtering
+#python2 code/PrintVariantStats.py $outputDir/Variants.txt | tee $outputDir/VariantStats.txt
 
-#scripts/buildMatrix "$tmpDir/*" $outputDir/Pathway.MutFreq.Stats.ThresholdSummary.txt
-
-selectedThreshold=0.018
-
-#python2 code/FilterFile.py $tcgaOutputDir/Gene.MutFreq.txt "float(x[-1]) < $selectedThreshold or x[0] in ('672', '675')" 1 $tmpFile3
+threshold=0.018
+#python2 code/FilterFile.py $tcgaOutputDir/Gene.MutFreq.txt "float(x[-1]) < $threshold or x[0] in ('672', '675')" 1 $tmpFile3
 #python2 code/SelectColumns.py $tmpFile3 0 $tmpFile4
 #tail -n +2 $tmpFile4 > $tmpFile3
 #python2 code/Uniquify.py $tmpFile3
 #python2 code/FilterFileByColumnValues.py $outputDir/Variants.txt 6 $tmpFile3 1 $outputDir/Variants_Minus_TCGA_Genes.txt
 
-#python2 code/PrintVariantStats.py $outputDir/Variants_Minus_TCGA_Genes.txt
+#scripts/exome2/calculate_mutfreq_stats $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenesFile $entrezGeneSymbolsFile $gmtFiles $controlSamplesFile $cancerSamplesFile UtahControl UtahCancer $outputDir/Gene.MutFreq.Stats.txt $outputDir/Pathway.MutFreq.Stats.txt False
 
-#python2 code/CountMutatedSamples.py $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile None BCSP 672,675 $outputDir/Gene.MutFreq.Minus_TCGA_Genes.txt $outputDir/Pathway.MutFreq.Minus_TCGA_Genes.txt
-#python2 code/CountMutatedSamples.py $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile $controlSamplesFile BCSP 672,675 $outputDir/Gene.MutFreq.Minus_TCGA_Genes.Control.txt $outputDir/Pathway.MutFreq.Minus_TCGA_Genes.Control.txt
-#python2 code/CountMutatedSamples.py $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenesFile None $gmtFiles $entrezGeneSymbolsFile $cancerSamplesFile BCSP 672,675 $outputDir/Gene.MutFreq.Minus_TCGA_Genes.Cancer.txt $outputDir/Pathway.MutFreq.Minus_TCGA_Genes.Cancer.txt
+## Number of genes and pathways with at least one variant after gene-level filtering
+#python2 code/PrintVariantStats.py $outputDir/Variants_Minus_TCGA_Genes.txt | tee $outputDir/VariantStats_Minus_TCGA_Genes.txt
 
-#tmpPermutedGeneDir=$tmpDir/Gene
-#tmpPermutedPathwayDir=$tmpDir/Pathway
-#mkdir -p $tmpPermutedGeneDir $tmpPermutedPathwayDir
-
-#seq 1 1000 | parallel --max-procs 50 scripts/exome/calculate_mutfreq_stats $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenesFile $entrezGeneSymbolsFile $gmtFiles $controlSamplesFile $cancerSamplesFile UtahControl UtahCancer $tmpPermutedGeneDir/{}.full $tmpPermutedPathwayDir/{}.full True
-#ls $tmpPermutedGeneDir/*.full $tmpPermutedPathwayDir/*.full | parallel --max-procs 50 python2 code/SelectColumns.py {} "0,-1" {}.selected
-#ls $tmpPermutedGeneDir/*.selected $tmpPermutedPathwayDir/*.selected | parallel --max-procs 50 "tail -n +2 {} > {}2"
-
-#scripts/buildMatrix3 "$tmpPermutedGeneDir/*.selected2" $outputDir/Gene.MutFreq.Stats.$selectedThreshold.Permuted.txt
-#scripts/buildMatrix3 "$tmpPermutedPathwayDir/*.selected2" $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.Permuted.txt
-
-#python2 code/SelectColumns.py $outputDir/Gene.MutFreq.Stats.$selectedThreshold.txt 0,-1 $tmpFile1
-#python2 code/CalculateEmpiricalPValues.py $tmpFile1 1 $outputDir/Gene.MutFreq.Stats.$selectedThreshold.Permuted.txt $tmpFile3
-#python2 code/SelectColumns.py $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.txt 0,-1 $tmpFile1
-#python2 code/CalculateEmpiricalPValues.py $tmpFile1 1 $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.Permuted.txt $tmpFile4
-
-#echo -e "GeneID\tEmpirical_P" > $tmpFile5
-#echo -e "Pathway\tEmpirical_P" > $tmpFile6
-#cat $tmpFile5 $tmpFile3 > $tmpFile7
-#cat $tmpFile6 $tmpFile4 > $tmpFile8
-
-#python2 code/MergeMatrixOnRowNames.py $outputDir/Gene.MutFreq.Stats.$selectedThreshold.txt $tmpFile7 $tmpFile13
-#python2 code/MergeMatrixOnRowNames.py $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.txt $tmpFile8 $tmpFile14
-
-#python2 code/FilterFile.py $tmpFile13 "x[-1] != 'NA'" 1 $tmpFile1
-#python2 code/FilterFile.py $tmpFile14 "x[-1] != 'NA'" 1 $tmpFile2
-
-#python2 code/SortFile.py $tmpFile1 -1 forward 1 numeric $outputDir/Gene.MutFreq.Stats.$selectedThreshold.txt
-#python2 code/SortFile.py $tmpFile2 -1 forward 1 numeric $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.txt
-#vim $outputDir/Gene.MutFreq.Stats.$selectedThreshold.txt
-#vim $outputDir/Pathway.MutFreq.Stats.$selectedThreshold.txt
-
-#python2 code/SelectColumnsByName.py $outputDir/Variants.txt GeneID $tmpFile1
-#python2 code/Uniquify.py $tmpFile1 $tmpFile1
-#echo "Unique genes (add one to total)"
-#wc -l $tmpFile1
-#python2 code/SelectColumnsByName.py $outputDir/Variants_Minus_TCGA_Genes.txt GeneID $tmpFile1
-#python2 code/Uniquify.py $tmpFile1 $tmpFile1
-#echo "Unique genes after excluding TCGA (add one to total)"
-#wc -l $tmpFile1
-
-function printNumUniqueGenes {
-  variantsFile=$1
-
-  python2 code/SelectColumns.py $variantsFile 6 $tmpFile15
-  tail -n +2 $tmpFile15 > $tmpFile14
-  python2 code/Uniquify.py $tmpFile14
-  numGenes=`wc -l $tmpFile14`
-  echo $variantsFile has $numGenes unique genes
-}
-
-#wc -l $outputDir/Variants.txt
-#wc -l $outputDir/Variants_Minus_TCGA_Genes.txt
-#printNumUniqueGenes $outputDir/Variants.txt
-#printNumUniqueGenes $outputDir/Variants_Minus_TCGA_Genes.txt
+python2 code/CreateProteinEffectReports.py $outputDir/Variants_Minus_TCGA_Genes.txt $entrezGenePositionsFile $entrezGeneSequencesFile $outputDir/Proteins.txt $outputDir/Protein_Summary.txt
 
 source scripts/delete_temp_files
