@@ -12,12 +12,10 @@ for i in 1 2
 do
 #  runExperiment Experiments/utahontario${i}_NoPathways_24vs35.txt
 #  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35.txt
-#
-#  runExperiment Experiments/utahontario${i}_Pathways_24vs35.txt
-  runExperiment Experiments/utahontario${i}_Pathways_01vs35.txt
-#  runExperiment Experiments/utahontario${i}_Pathways_0124vs35.txt
+  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35_repeat.txt
 
-  runExperiment Experiments/utahontario${i}_Pathways_24vs35b.txt
+#  runExperiment Experiments/utahontario${i}_Pathways_24vs35.txt
+#  runExperiment Experiments/utahontario${i}_Pathways_0124vs35.txt
 done
 
 #runExperiment Experiments/Visvader_Pathways.txt

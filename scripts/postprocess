@@ -107,7 +107,7 @@ vim /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest35
 
 #calculateMetrics
 
-function summarizeMetrics {
+function combineMetrics {
   for metric in AUCs PermutedAUCs
   do
     for descriptionDir in ML-Flex_Results/*/Pathways/*/$metric
@@ -121,7 +121,11 @@ function summarizeMetrics {
       fi
     done
   done
+}
 
+#combineMetrics
+
+function summarizeMetrics {
   for metric in AUCs PermutedAUCs
   do
     summaryFile=ML-Flex_Results/${metric}_Summary.txt
@@ -145,13 +149,13 @@ function summarizeMetrics {
   python code/MergeMatrixOnRowNames.py ML-Flex_Results/AUCs_Summary.txt ML-Flex_Results/PermutedAUCs_Summary.txt $tmpFile1
   python code/MergeMatrixOnRowNames.py $tmpFile1 $tmpFile2 $tmpFile3
 
-  Rscript --vanilla code/AddCombinedP.R $tmpFile3 7,8,17 TRUE $tmpFile2
-  Rscript --vanilla code/AddCombinedP.R $tmpFile2 9,10,17,11,12 TRUE Results/Overall_Pathway_Summary.txt
-  #Rscript --vanilla code/AddCombinedP.R $tmpFile2 7,8,17,11,12 TRUE Results/Overall_Pathway_Summary.txt
+  Rscript --vanilla code/AddCombinedP.R $tmpFile3 7,8,17 TRUE $tmpFile1
+  Rscript --vanilla code/AddCombinedP.R $tmpFile1 7,8,17,11,12 TRUE $tmpFile2
+  Rscript --vanilla code/AddCombinedP.R $tmpFile2 11,12 TRUE Results/Overall_Pathway_Summary.txt
 vim Results/Overall_Pathway_Summary.txt
 }
 
-#summarizeMetrics
+summarizeMetrics
 
 function identifySelectedGenes {
   selectedGenesDir=ML-Flex_Results/24vs35/Pathways/UtahTraining/SelectedGenes
@@ -301,31 +305,3 @@ function consensusGenes {
 #python code/TransposeData.py $tmpFile4 $tmpFile6
 #python code/MergeMatrixOnRowNames.py $tmpFile5 $tmpFile6 matrices/utahontario.batch.txt
 #python code/PrintMatrixDimensions.py matrices/utahontario.batch.txt
-
-#python code/FilterFileByColumnValues.py library/all_pathways.gmt 0 Results/TopPathways_24vs35.txt 0 $tmpFile1
-#Rscript --vanilla code/Ying_PathwayLevel.R $tmpFile1 matrices/utahontario.batch.txt clinical/classes.0124vs35.txt Results/Ying_Pathway_Strengths.txt
-
-function runExperiment {
-  cd ML-Flex
-  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
-  java -Xmx30g -jar mlflex.jar ACTION=Process EXPERIMENT_FILE=$1 NUM_THREADS=6 THREAD_TIMEOUT_MINUTES=60 PAUSE_SECONDS=1 DEBUG=false
-  cd ..
-}
-
-#python code/CreateArff.py Results/Ying_Pathway_Strengths.txt clinical/classes.0124vs35.txt None True ML-Flex/InputData/Ying_Pathway_Strengths.arff
-#runExperiment Experiments/Ying_Pathway_Strengths.txt
-
-trainingPredictionsFile=ML-Flex/Output/Ying_Pathway_Strengths_Experiment/Results/Ying_Pathway_Strengths/weka_svm_weights/r_svm_rbf/Training_Data/Predictions.txt
-testPredictionsFile=ML-Flex/Output/Ying_Pathway_Strengths_Experiment/Results/Ying_Pathway_Strengths/weka_svm_weights/r_svm_rbf/Predictions.txt
-yingMLResultsDir=ML-Flex_Results/Ying
-
-#mkdir -p $yingMLResultsDir
-#rm -f $yingMLResultsDir/*
-#
-#tail -n +2 $trainingPredictionsFile > $tmpFile1
-#tail -n +2 $testPredictionsFile > $tmpFile2
-#python code/SelectColumns.py clinical/ontario.24vs35.txt 0 $tmpFile3
-#python code/FilterFileByColumnValues.py $tmpFile2 0 $tmpFile3 1 $tmpFile4
-#Rscript --vanilla code/CalculatePredictionMetrics.R $tmpFile1 BRCACancer 1000 $yingMLResultsDir/Training24vs35.AUC.txt $yingMLResultsDir/Training24vs35.PermutedAUC.txt
-#Rscript --vanilla code/CalculatePredictionMetrics.R $tmpFile2 BRCACancer 1000 $yingMLResultsDir/All.Testing.AUC.txt $yingMLResultsDir/All.Testing.PermutedAUC.txt
-#Rscript --vanilla code/CalculatePredictionMetrics.R $tmpFile4 BRCACancer 1000 $yingMLResultsDir/Ontario24vs35.Testing.AUC.txt $yingMLResultsDir/Ontario24vs35.Testing.PermutedAUC.txt
