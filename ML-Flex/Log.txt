@@ -1,4 +1,0 @@
-2013-10-28 10:31:05,845 | INFO  | main | 155.101.146.212 | Beginning experiment utahontario1_NoPathways_0124vs35_repeat 
-2013-10-28 10:31:05,905 | INFO  | pool-1-thread-1 | 155.101.146.212 | utahontario1_NoPathways_0124vs35_repeat | Attempt: Set random seed 
-2013-10-28 10:31:05,908 | INFO  | pool-1-thread-1 | 155.101.146.212 | utahontario1_NoPathways_0124vs35_repeat | Success: Set random seed 
-2013-10-28 10:31:05,914 | INFO  | pool-2-thread-1 | 155.101.146.212 | utahontario1_NoPathways_0124vs35_repeat | Attempt: Process raw analysis data for utahontario1.batch.All 
