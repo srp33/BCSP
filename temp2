@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd ML-Flex
+#rm -f Log.txt
+
+function runExperiment {
+#  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
+  java -Xmx2g -jar mlflex.jar ACTION=Process EXPERIMENT_FILE=$1 NUM_THREADS=1 THREAD_TIMEOUT_MINUTES=6 PAUSE_SECONDS=1 DEBUG=false
+}
+
+for i in 1
+do
+#  runExperiment Experiments/utahontario${i}_NoPathways_24vs35.txt
+#  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35.txt
+  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35_repeat.txt
+
+#  runExperiment Experiments/utahontario${i}_Pathways_24vs35.txt
+#  runExperiment Experiments/utahontario${i}_Pathways_0124vs35.txt
+done
+
+#runExperiment Experiments/Visvader_Pathways.txt
+#runExperiment Experiments/Bellacosa_Pathways.txt
+#runExperiment Experiments/Bellacosa_Ovary_Pathways.txt
+
+cd ..

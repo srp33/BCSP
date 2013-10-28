@@ -1,4 +1,0 @@
-# Confusion matrix that helps visual classification performance for each class (dependent variable). Various ensemble-learning approaches were used for classification. See the README files for details.
-	Predicted as BRCA	Predicted as Control
-BRCA	11	1
-Control	5	1

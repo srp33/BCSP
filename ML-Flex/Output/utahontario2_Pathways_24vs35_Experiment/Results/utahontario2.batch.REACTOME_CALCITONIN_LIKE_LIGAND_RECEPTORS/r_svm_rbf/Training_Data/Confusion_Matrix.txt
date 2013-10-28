@@ -1,4 +1,0 @@
-# Confusion matrix that helps visual classification performance for each class (dependent variable).
-	Predicted as BRCACancer	Predicted as Control
-BRCACancer	13	26
-Control	9	35

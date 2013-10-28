@@ -1,25 +1,39 @@
 #!/bin/bash
 
+# The first set of experiments were on an earlier version of ML-Flex.
 cd ML-Flex
 rm -f Log.txt
 
 function runExperiment {
-#  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
+  java -Xmx8g -jar mlflex.jar ACTION=Reset EXPERIMENTS=$1 PAUSE_SECONDS=1 THREAD_TIMEOUT_MINUTES=5 NUM_THREADS=1 DEBUG=false
+  java -Xmx8g -jar mlflex.jar ACTION=Process EXPERIMENTS=$1 PAUSE_SECONDS=1 THREAD_TIMEOUT_MINUTES=5 NUM_THREADS=1 DEBUG=false
+}
+
+runExperiment utahontario1
+runExperiment utahontario2
+runExperiment utahontario1_Permute
+runExperiment utahontario2_Permute
+runExperiment utahontario1_RepeatA
+runExperiment utahontario2_RepeatA
+
+# The second set of experiments were on a later version of ML-Flex.
+
+cd ../ML-Flex2
+rm -f Log.txt
+
+function runExperiment2 {
+  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
   java -Xmx30g -jar mlflex.jar ACTION=Process EXPERIMENT_FILE=$1 NUM_THREADS=6 THREAD_TIMEOUT_MINUTES=6 PAUSE_SECONDS=1 DEBUG=false
 }
 
 for i in 1 2
 do
-#  runExperiment Experiments/utahontario${i}_NoPathways_24vs35.txt
-#  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35.txt
-  runExperiment Experiments/utahontario${i}_NoPathways_0124vs35_repeat.txt
-
-#  runExperiment Experiments/utahontario${i}_Pathways_24vs35.txt
-#  runExperiment Experiments/utahontario${i}_Pathways_0124vs35.txt
+  runExperiment2 Experiments/utahontario${i}_Pathways_24vs35.txt
+  runExperiment2 Experiments/utahontario${i}_Pathways_0124vs35.txt
 done
 
-#runExperiment Experiments/Visvader_Pathways.txt
-#runExperiment Experiments/Bellacosa_Pathways.txt
-#runExperiment Experiments/Bellacosa_Ovary_Pathways.txt
+runExperiment2 Experiments/Visvader_Pathways.txt
+runExperiment2 Experiments/Bellacosa_Pathways.txt
+runExperiment2 Experiments/Bellacosa_Ovary_Pathways.txt
 
 cd ..

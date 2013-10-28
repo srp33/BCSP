@@ -1,5 +1,0 @@
-# Summary statistics describing input data.
-Statistic	Value
-Num Instances	20
-Num Variables	126
-Proportion Missing Values	0.0

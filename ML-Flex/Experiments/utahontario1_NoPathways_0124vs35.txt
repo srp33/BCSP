@@ -1,8 +1,0 @@
-CLASSIFICATION_ALGORITHMS=r_svm_rbf
-FEATURE_SELECTION_ALGORITHMS=weka_svm_weights
-NUM_FEATURES_OPTIONS=25;50;75;100;125;150;175;200;225;250;275;300
-DATA_PROCESSORS=mlflex.dataprocessors.ArffDataProcessor("InputData/utahontario1.batch.All.arff")
-TRAIN_INSTANCE_IDS=Experiments/0124vs35.training.samples.txt
-TEST_INSTANCE_IDS=Experiments/0124vs35.test.samples.txt
-NUM_INNER_CROSS_VALIDATION_FOLDS=10
-NUM_ITERATIONS=1

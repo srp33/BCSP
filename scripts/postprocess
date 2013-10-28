@@ -2,19 +2,34 @@
 
 source scripts/create_temp_files
 
-#for comparison in 24vs35 01vs35 0124vs35
-#do
-#  for pathway in `cat library/all_pathways.txt`
-#  do
-#    echo scripts/postprocess_parsePredictionFiles Pathways $pathway $comparison >> $tmpFile1
-#  done
-#
-#  echo scripts/postprocess_parsePredictionFiles NoPathways All $comparison >> $tmpFile1
-#done
-#chmod 777 $tmpFile1
-#parallel --max-procs 50 -a $tmpFile1
+###############################################################
+# Parse "no-pathway" results
+###############################################################
 
-#for comparison in 24vs35b
+#mkdir -p ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions
+#mkdir -p ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions
+#mkdir -p ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions
+#mkdir -p ML-Flex_Results/0124vs35/NoPathways/All/Predictions
+
+#python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_Training_Data_PredictionInfo.txt $tmpFile1
+#python code/ReplaceText.py $tmpFile1 InstanceID Instance_ID $tmpFile1
+#python code/ReplaceText.py $tmpFile1 DependentVariableValue Dependent_Variable_Value $tmpFile1
+#python code/PrefixLinesWith.py $tmpFile1 Utah__ 1 ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All
+
+#python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile1
+#python code/FixNewLines.py ML-Flex/Output/utahontario2Experiment/Results/utahontario2_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile2
+#tail -n +2 $tmpFile2 > $tmpFile3
+#cat $tmpFile1 $tmpFile3 > $tmpFile4
+#python code/ReplaceText.py $tmpFile4 InstanceID Instance_ID $tmpFile4
+#python code/ReplaceText.py $tmpFile4 DependentVariableValue Dependent_Variable_Value $tmpFile4
+#python code/PrefixLinesWith.py $tmpFile4 Ontario__ 1 ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All
+#cp ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions/All
+
+#python code/HeaderCat2.py ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/All/Predictions/All
+
+###############################################################
+
+#for comparison in 24vs35 0124vs35
 #do
 #  for pathway in `cat library/all_pathways.txt`
 #  do
@@ -29,7 +44,7 @@ function parseLoocvPredictions {
 
   for pathway in `cat library/all_pathways.txt`
   do
-    inFile=ML-Flex/Output/${dataSet}_Pathways_Experiment/Results/${dataSet}.$pathway/weka_svm_weights/r_svm_rbf/Predictions.txt
+    inFile=ML-Flex2/Output/${dataSet}_Pathways_Experiment/Results/${dataSet}.$pathway/weka_svm_weights/r_svm_rbf/Predictions.txt
     outFile=ML-Flex_Results/CrossValidation/Pathways/$dataSet/Predictions/$pathway
 
     if [ ! -f $inFile ]
@@ -71,38 +86,35 @@ function parseLoocvPredictions {
 #################################################################
 
 function calculateMetrics {
-#  rm -f $tmpFile1
-#  for f in ML-Flex_Results/*/*/UtahTraining/Predictions/* ML-Flex_Results/*/*/OntarioTesting/Predictions/* ML-Flex_Results/*/*/AllTesting/Predictions/*
-#  do
-#    echo scripts/postprocess_calculateMetrics $f BRCACancer >> $tmpFile1
-#  done
-#
-#  for f in ML-Flex_Results/CrossValidation/Pathways/*/Predictions/*
-#  do
-#    echo scripts/postprocess_calculateMetrics $f BRCA >> $tmpFile1
-#  done
-#
-#  chmod 777 $tmpFile1
-#  parallel --max-procs 50 -a $tmpFile1
+  rm -f $tmpFile1
+  for f in ML-Flex_Results/*/*/UtahTraining/Predictions/* ML-Flex_Results/*/*/OntarioTesting/Predictions/* ML-Flex_Results/*/*/AllTesting/Predictions/*
+  do
+    echo scripts/postprocess_calculateMetrics $f BRCACancer >> $tmpFile1
+  done
 
-#  for f in /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/Predictions/*
-#  do
-#    echo $f
-#    out24=${f/Predictions/ControlTest24}
-#    out35=${f/Predictions/ControlTest35}
-#
-#    mkdir -p $(dirname $out24) $(dirname $out35)
-#
-#    Rscript --vanilla code/TestControls.R $f clinical/family.txt 2 4 $out24
-#    Rscript --vanilla code/TestControls.R $f clinical/family.txt 3 5 $out35
-#  done
+  for f in ML-Flex_Results/CrossValidation/Pathways/*/Predictions/*
+  do
+    echo scripts/postprocess_calculateMetrics $f BRCA >> $tmpFile1
+  done
 
-#  python code/CombineScalarValues.py "/home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24/*" $tmpFile1
-#  python code/SortFileByExpression.py $tmpFile1 "float(x[1])" forward 0 /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24.txt
+  chmod 777 $tmpFile1
+  parallel --max-procs 50 -a $tmpFile1
+
+  for f in /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/Predictions/*
+  do
+    echo $f
+    out24=${f/Predictions/ControlTest24}
+    out35=${f/Predictions/ControlTest35}
+
+    mkdir -p $(dirname $out24) $(dirname $out35)
+
+    Rscript --vanilla code/TestControls.R $f clinical/family.txt 2 4 $out24
+    Rscript --vanilla code/TestControls.R $f clinical/family.txt 3 5 $out35
+  done
+
+  python code/CombineScalarValues.py "/home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24/*" $tmpFile1
+  python code/SortFileByExpression.py $tmpFile1 "float(x[1])" forward 0 /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24.txt
 #vim /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24.txt
-#  python code/CombineScalarValues.py "/home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest35/*" $tmpFile1
-#  python code/SortFileByExpression.py $tmpFile1 "float(x[1])" forward 0 /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest35.txt
-vim /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest35.txt
 }
 
 #calculateMetrics
@@ -155,7 +167,7 @@ function summarizeMetrics {
 vim Results/Overall_Pathway_Summary.txt
 }
 
-summarizeMetrics
+#summarizeMetrics
 
 function identifySelectedGenes {
   selectedGenesDir=ML-Flex_Results/24vs35/Pathways/UtahTraining/SelectedGenes
@@ -165,8 +177,8 @@ function identifySelectedGenes {
   for pathway in `cat library/all_pathways.txt`
   do
     echo $pathway
-    numFeaturesAucFile=ML-Flex/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/r_svm_rbf/Training_Data/Number_of_Features_vs_AUC.txt
-    featureRanksFile=ML-Flex/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/Feature_Ranks.txt
+    numFeaturesAucFile=ML-Flex2/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/r_svm_rbf/Training_Data/Number_of_Features_vs_AUC.txt
+    featureRanksFile=ML-Flex2/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/Feature_Ranks.txt
 
     if [ -f $numFeaturesAucFile ]
     then
@@ -180,17 +192,6 @@ function identifySelectedGenes {
   done
 
   python code/MergeGeneIDFilesIntoGmt.py "$selectedGenesDir/*" ML-Flex_Results/Pathways_24vs35_SelectedGenes.gmt
-
-  # Select for the non-pathway results
-  selectedGenesDir=ML-Flex_Results/24vs35/NoPathways/UtahTraining/SelectedGenes
-  mkdir -p $selectedGenesDir
-  numFeaturesAucFile=ML-Flex/Output/utahontario1_NoPathways_24vs35_Experiment/Results/utahontario1.batch.All/weka_svm_weights/r_svm_rbf/Training_Data/Number_of_Features_vs_AUC.txt
-  featureRanksFile=ML-Flex/Output/utahontario1_NoPathways_24vs35_Experiment/Results/utahontario1.batch.All/weka_svm_weights/Feature_Ranks.txt
-
-  bestNumFeatures=`python code/ParseBestNumFeatures.py $numFeaturesAucFile`
-  tail -n +3 $featureRanksFile > $tmpFile1
-  head -n $bestNumFeatures $tmpFile1 > $tmpFile2
-  python code/SelectColumns.py $tmpFile2 0 $selectedGenesDir/All
 }
 
 #identifySelectedGenes
