@@ -27,6 +27,8 @@ source scripts/create_temp_files
 
 #python code/HeaderCat2.py ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/All/Predictions/All
 
+cp -v ML-Flex/Output/utahontario1_RepeatAExperiment/*NumFeatures* ML-Flex_Results/0124vs35/NoPathways/UtahTraining/
+
 ###############################################################
 
 #for comparison in 24vs35 0124vs35
