@@ -4,8 +4,8 @@ cd ML-Flex
 rm -f Log.txt
 
 function runExperiment {
-  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
-#  java -Xmx30g -jar mlflex.jar ACTION=Process EXPERIMENT_FILE=$1 NUM_THREADS=6 THREAD_TIMEOUT_MINUTES=6 PAUSE_SECONDS=1 DEBUG=false
+#  java -Xmx2g -jar mlflex.jar ACTION=Reset EXPERIMENT_FILE=$1 NUM_THREADS=6
+  java -Xmx30g -jar mlflex.jar ACTION=Process EXPERIMENT_FILE=$1 NUM_THREADS=6 THREAD_TIMEOUT_MINUTES=6 PAUSE_SECONDS=1 DEBUG=false
 }
 
 for i in 1 2
