@@ -27,7 +27,7 @@ source scripts/create_temp_files
 
 #python code/HeaderCat2.py ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/All/Predictions/All
 
-cp -v ML-Flex/Output/utahontario1_RepeatAExperiment/*NumFeatures* ML-Flex_Results/0124vs35/NoPathways/UtahTraining/
+#cp -v ML-Flex/Output/utahontario1_RepeatAExperiment/*NumFeatures* ML-Flex_Results/0124vs35/NoPathways/UtahTraining/
 
 ###############################################################
 
@@ -171,7 +171,25 @@ vim Results/Overall_Pathway_Summary.txt
 
 #summarizeMetrics
 
-function identifySelectedGenes {
+function identifySelectedGenes1 {
+  selectedGenesDir=ML-Flex_Results/0124vs35/NoPathways/UtahTraining/SelectedGenes
+  mkdir -p $selectedGenesDir
+  rm -f $selectedGenesDir/*
+
+  featureRanksFile1=ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_MeanFeatureRanks.txt
+  featureRanksFile2=ML-Flex/Output/utahontario2Experiment/Results/utahontario2_weka_svm_weights_MeanFeatureRanks.txt
+
+  tail -n +2 $featureRanksFile1 > $tmpFile1
+  tail -n +2 $featureRanksFile2 > $tmpFile2
+  head -n 125 $tmpFile1 > $tmpFile3
+  head -n 225 $tmpFile2 > $tmpFile4
+  python code/SelectColumns.py $tmpFile3 0 $selectedGenesDir/utahontario1
+  python code/SelectColumns.py $tmpFile4 0 $selectedGenesDir/utahontario2
+}
+
+#identifySelectedGenes1
+
+function identifySelectedGenes2 {
   selectedGenesDir=ML-Flex_Results/24vs35/Pathways/UtahTraining/SelectedGenes
   mkdir -p $selectedGenesDir
   rm -f $selectedGenesDir/*
@@ -196,7 +214,7 @@ function identifySelectedGenes {
   python code/MergeGeneIDFilesIntoGmt.py "$selectedGenesDir/*" ML-Flex_Results/Pathways_24vs35_SelectedGenes.gmt
 }
 
-#identifySelectedGenes
+#identifySelectedGenes2
 
 function buildGeneStatsFile {
   statsFile=Results/Gene.Expression.Stats.txt
