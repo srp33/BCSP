@@ -124,6 +124,10 @@ exonGreenProbesFile=library/HuEx-1.0.green.probes.txt
 # Build Arff files for Lim, et al. (Visvader)
 #python code/CreateArff.py None clinical/Visvader.Control_vs_BRCA.classes.txt None True ML-Flex/InputData/Visvader.classes.arff
 
+# Build GenePatterns files
+#python code/BuildGenePatternFiles.py matrices/Bellacosa.txt clinical/Bellacosa.classes.txt Results/Bellacosa.gct Results/Bellacosa.cls
+#python code/BuildGenePatternFiles.py matrices/Visvader.txt clinical/Visvader.Control_vs_BRCA.classes.txt Results/Visvader.gct Results/Visvader.cls
+
 #allDataProcessorsText=
 #for pathwayFile in genesets/*.gene.ids.txt
 #do

@@ -296,7 +296,7 @@ function consensusGenes {
   python code/InsertMatrixColumnViaExpression.py $tmpFile2 "Ontario1 Abs Fold Change" "math.fabs(float(x[$fcIndex2]) - 1)" $tmpFile2
   python code/InsertMatrixColumnViaExpression.py $tmpFile2 "Ontario2 Abs Fold Change" "math.fabs(float(x[$fcIndex3]) - 1)" $tmpFile2
 
-  # Add rank columns for t-tests
+  # Add rank columns
   python code/InsertRankColumn.py $tmpFile2 True $ttIndex1 False $tmpFile2
   python code/InsertRankColumn.py $tmpFile2 True $ttIndex2 False $tmpFile2
   python code/InsertRankColumn.py $tmpFile2 True $ttIndex3 False $tmpFile2
@@ -314,6 +314,16 @@ function consensusGenes {
 
 #consensusGenes 24v35 3 4 5 6 7 8
 #consensusGenes 0124v35 9 10 11 12 13 14
+
+#python code/FilterFile.py Results/Gene.Expression.Stats.txt "x[12] != 'NA' and x[13] != 'NA' and x[14] != 'NA'" 1 $tmpFile2
+#python code/InsertRankColumn.py $tmpFile2 True 12 True $tmpFile2
+#python code/InsertRankColumn.py $tmpFile2 True 13 True $tmpFile2
+#python code/InsertRankColumn.py $tmpFile2 True 14 True $tmpFile2
+#python code/SortFileByExpression.py $tmpFile2 "utilities.calculateMean([float(y) for y in x[19:]])" forward 1 $tmpFile1
+#python code/SelectColumns.py $tmpFile1 0 $tmpFile2
+#tail -n +2 $tmpFile2 > $tmpFile1
+#head -n 250 $tmpFile1 > Results/BCSP.Up.Gene.ID.0124vs35.txt
+#python code/CreateGmtFileFromIDs.py Results/BCSP.Up.Gene.ID.0124vs35.txt Results/BCSP.Up.0124vs35.gmt
 
 # Create expression file that includes all samples
 #python code/SelectColumns.py clinical/classes.0124vs35.txt 0 $tmpFile2

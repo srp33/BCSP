@@ -34,6 +34,5 @@ done
 
 runExperiment2 Experiments/Visvader_Pathways.txt
 runExperiment2 Experiments/Bellacosa_Pathways.txt
-runExperiment2 Experiments/Bellacosa_Ovary_Pathways.txt
 
 cd ..
