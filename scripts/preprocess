@@ -64,21 +64,18 @@ done
 scripts/normalizeDir utah $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
 scripts/normalizeDir ontario1 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
 scripts/normalizeDir ontario2 $exonAffyProbeTabFile "0/2/3/9" $exonAffyFullProbesFile
-scripts/normalizeDir Bellacosa_Breast library/HG-U133_Plus_2.probe_tab "6/1/2/4/3" None
 scripts/normalizeDir GSE12517 library/HG-U133A.probe_tab "6/1/2/4/3" None
 
 # Summarize data at gene level
 scripts/summarizeNormDir .norm.txt utah 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
 scripts/summarizeNormDir .norm.txt ontario1 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
 scripts/summarizeNormDir .norm.txt ontario2 1 expr green gene $exonGeneProbeFile $exonGreenProbesFile 5 calculateTrimmedMean None
-scripts/summarizeNormDir .norm.txt Bellacosa_Breast 1 expr green gene library/HG-U133_Plus2.gene_probe.txt library/HG-U133_Plus2.green.probes.txt 5 calculateTrimmedMean None
 scripts/summarizeNormDir .norm.txt GSE12517 1 expr green gene library/HG-U133A.gene_probe.txt library/HG-U133A.green.probes.txt 5 calculateTrimmedMean None
 
 # Create matrix files with summarized data
 python code/BuildMatrixFile.py summarization/utah/ .gene.green.expr.txt None 1 Utah__ matrices/utah.expr.txt
 python code/BuildMatrixFile.py summarization/ontario1/ .gene.green.expr.txt None 1 Ontario__ matrices/ontario1.expr.txt
 python code/BuildMatrixFile.py summarization/ontario2/ .gene.green.expr.txt None 1 Ontario__ matrices/ontario2.expr.txt
-python code/BuildMatrixFile.py summarization/Bellacosa_Breast/ .gene.green.expr.txt None 1 "" matrices/Bellacosa.txt
 python code/BuildMatrixFile.py summarization/GSE12517/ .gene.green.expr.txt None 1 "" matrices/GSE12517.txt
 
 # Build matrix files for Utah and Ontario
