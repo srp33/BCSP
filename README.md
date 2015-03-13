@@ -11,6 +11,11 @@ Prerequisites
 
     e1071 package
 
+Analysis
+====
+
+To run the analysis, you would execute the ```go``` bash script. This calls various other scripts.
+
 Notes
 ====
 
