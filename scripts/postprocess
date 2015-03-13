@@ -1,175 +1,70 @@
 #!/bin/bash
 
+###############################################################
+# Parse results for 0124vs35
+###############################################################
+
 source scripts/create_temp_files
 
-###############################################################
-# Parse "no-pathway" results
-###############################################################
+mkdir -p ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions
+mkdir -p ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions
+mkdir -p ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions
+mkdir -p ML-Flex_Results/0124vs35/NoPathways/All/Predictions
 
-#mkdir -p ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions
-#mkdir -p ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions
-#mkdir -p ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions
-#mkdir -p ML-Flex_Results/0124vs35/NoPathways/All/Predictions
+python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_Training_Data_PredictionInfo.txt $tmpFile1
+python code/ReplaceText.py $tmpFile1 InstanceID Instance_ID $tmpFile1
+python code/ReplaceText.py $tmpFile1 DependentVariableValue Dependent_Variable_Value $tmpFile1
+python code/PrefixLinesWith.py $tmpFile1 Utah__ 1 ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All
 
-#python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_Training_Data_PredictionInfo.txt $tmpFile1
-#python code/ReplaceText.py $tmpFile1 InstanceID Instance_ID $tmpFile1
-#python code/ReplaceText.py $tmpFile1 DependentVariableValue Dependent_Variable_Value $tmpFile1
-#python code/PrefixLinesWith.py $tmpFile1 Utah__ 1 ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All
+python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile1
+python code/FixNewLines.py ML-Flex/Output/utahontario2Experiment/Results/utahontario2_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile2
+tail -n +2 $tmpFile2 > $tmpFile3
+cat $tmpFile1 $tmpFile3 > $tmpFile4
+python code/ReplaceText.py $tmpFile4 InstanceID Instance_ID $tmpFile4
+python code/ReplaceText.py $tmpFile4 DependentVariableValue Dependent_Variable_Value $tmpFile4
+python code/PrefixLinesWith.py $tmpFile4 Ontario__ 1 ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All
+cp ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions/All
 
-#python code/FixNewLines.py ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile1
-#python code/FixNewLines.py ML-Flex/Output/utahontario2Experiment/Results/utahontario2_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile2
-#tail -n +2 $tmpFile2 > $tmpFile3
-#cat $tmpFile1 $tmpFile3 > $tmpFile4
-#python code/ReplaceText.py $tmpFile4 InstanceID Instance_ID $tmpFile4
-#python code/ReplaceText.py $tmpFile4 DependentVariableValue Dependent_Variable_Value $tmpFile4
-#python code/PrefixLinesWith.py $tmpFile4 Ontario__ 1 ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All
-#cp ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/AllTesting/Predictions/All
+python code/HeaderCat2.py ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/All/Predictions/All
 
-#python code/HeaderCat2.py ML-Flex_Results/0124vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/0124vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/0124vs35/NoPathways/All/Predictions/All
+cp -v ML-Flex/Output/utahontario1_RepeatAExperiment/*NumFeatures* ML-Flex_Results/0124vs35/NoPathways/UtahTraining/
 
-#cp -v ML-Flex/Output/utahontario1_RepeatAExperiment/*NumFeatures* ML-Flex_Results/0124vs35/NoPathways/UtahTraining/
+cp -v ML-Flex/Output/utahontario1Experiment/Results/utahontario1_weka_svm_weights_MeanFeatureRanks.txt ML-Flex_Results/0124vs35/NoPathways/UtahTraining/MeanFeatureRanks.txt
 
 ###############################################################
+# Parse "no-pathway" results for 1vs35
+###############################################################
 
-#for comparison in 24vs35 0124vs35
-#do
-#  for pathway in `cat library/all_pathways.txt`
-#  do
-#    echo scripts/postprocess_parsePredictionFiles Pathways $pathway $comparison >> $tmpFile1
-#  done
-#done
-#chmod 777 $tmpFile1
-#parallel --max-procs 50 -a $tmpFile1
+mkdir -p ML-Flex_Results/1vs35/NoPathways/UtahTraining/Predictions
+mkdir -p ML-Flex_Results/1vs35/NoPathways/OntarioTesting/Predictions
+mkdir -p ML-Flex_Results/1vs35/NoPathways/AllTesting/Predictions
+mkdir -p ML-Flex_Results/1vs35/NoPathways/All/Predictions
 
-function parseLoocvPredictions {
-  dataSet=$1
+python code/FixNewLines.py ML-Flex/Output/utahontario1_1vs35Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_Training_Data_PredictionInfo.txt $tmpFile1
+python code/ReplaceText.py $tmpFile1 InstanceID Instance_ID $tmpFile1
+python code/ReplaceText.py $tmpFile1 DependentVariableValue Dependent_Variable_Value $tmpFile1
+python code/PrefixLinesWith.py $tmpFile1 Utah__ 1 ML-Flex_Results/1vs35/NoPathways/UtahTraining/Predictions/All
 
-  for pathway in `cat library/all_pathways.txt`
-  do
-    inFile=ML-Flex2/Output/${dataSet}_Pathways_Experiment/Results/${dataSet}.$pathway/weka_svm_weights/r_svm_rbf/Predictions.txt
-    outFile=ML-Flex_Results/CrossValidation/Pathways/$dataSet/Predictions/$pathway
+python code/FixNewLines.py ML-Flex/Output/utahontario1_1vs35Experiment/Results/utahontario1_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile1
+python code/FixNewLines.py ML-Flex/Output/utahontario2_1vs35Experiment/Results/utahontario2_weka_svm_weights_r_svm_rbf_PredictionInfo.txt $tmpFile2
+tail -n +2 $tmpFile2 > $tmpFile3
+cat $tmpFile1 $tmpFile3 > $tmpFile4
+python code/ReplaceText.py $tmpFile4 InstanceID Instance_ID $tmpFile4
+python code/ReplaceText.py $tmpFile4 DependentVariableValue Dependent_Variable_Value $tmpFile4
+python code/PrefixLinesWith.py $tmpFile4 Ontario__ 1 ML-Flex_Results/1vs35/NoPathways/OntarioTesting/Predictions/All
+cp ML-Flex_Results/1vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/1vs35/NoPathways/AllTesting/Predictions/All
 
-    if [ ! -f $inFile ]
-    then
-      inFile=${inFile/\/weka_svm_weights/}
-    fi
+python code/HeaderCat2.py ML-Flex_Results/1vs35/NoPathways/UtahTraining/Predictions/All ML-Flex_Results/1vs35/NoPathways/OntarioTesting/Predictions/All ML-Flex_Results/1vs35/NoPathways/All/Predictions/All
 
-    if [ ! -f $outFile ]
-    then
-      echo $pathway
-      mkdir -p `dirname $outFile`
-      tail -n +2 $inFile > $outFile
-    fi
-  done
-}
+cp -v ML-Flex/Output/utahontario1_1vs35Experiment/Results/utahontario1_weka_svm_weights_MeanFeatureRanks.txt ML-Flex_Results/1vs35/NoPathways/UtahTraining/MeanFeatureRanks.txt
 
-#parseLoocvPredictions Visvader
-#parseLoocvPredictions Bellacosa
-#parseLoocvPredictions Bellacosa_Ovary
+###############################################################
+# Parse results for GSE12517
+###############################################################
 
-#################################################################
-# Build prediction matrices
-#################################################################
-
-#for descriptionDir in ML-Flex_Results/24vs35
-#do
-#  cohortDir=$descriptionDir/Pathways/All/Predictions
-#
-#  outFile=${cohortDir//\//__}__Predicted__Probabilities.txt
-#  outFile=${outFile/All__Predictions__/}
-#  outFile=${outFile/__/\/}
-#  outFile=${outFile//__/_}
-#
-#  python code/BuildPredictionMatrix.py "$cohortDir/*" $outFile
-#done
-
-#################################################################
-# Calculate prediction metrics
-#################################################################
-
-function calculateMetrics {
-  rm -f $tmpFile1
-  for f in ML-Flex_Results/*/*/UtahTraining/Predictions/* ML-Flex_Results/*/*/OntarioTesting/Predictions/* ML-Flex_Results/*/*/AllTesting/Predictions/*
-  do
-    echo scripts/postprocess_calculateMetrics $f BRCACancer >> $tmpFile1
-  done
-
-  for f in ML-Flex_Results/CrossValidation/Pathways/*/Predictions/*
-  do
-    echo scripts/postprocess_calculateMetrics $f BRCA >> $tmpFile1
-  done
-
-  chmod 777 $tmpFile1
-  parallel --max-procs 50 -a $tmpFile1
-
-  for f in /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/Predictions/*
-  do
-    echo $f
-    out24=${f/Predictions/ControlTest24}
-    out35=${f/Predictions/ControlTest35}
-
-    mkdir -p $(dirname $out24) $(dirname $out35)
-
-    Rscript --vanilla code/TestControls.R $f clinical/family.txt 2 4 $out24
-    Rscript --vanilla code/TestControls.R $f clinical/family.txt 3 5 $out35
-  done
-
-  python code/CombineScalarValues.py "/home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24/*" $tmpFile1
-  python code/SortFileByExpression.py $tmpFile1 "float(x[1])" forward 0 /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24.txt
-#vim /home/spiccolo/BCSP/ML-Flex_Results/24vs35/Pathways/AllTesting/ControlTest24.txt
-}
-
-#calculateMetrics
-
-function combineMetrics {
-  for metric in AUCs PermutedAUCs
-  do
-    for descriptionDir in ML-Flex_Results/*/Pathways/*/$metric
-    do
-      outFile=$descriptionDir.txt
-      
-      if [ ! -f $outFile ]
-      then
-        echo $descriptionDir
-        python code/CombineScalarValues.py "$descriptionDir/*" $outFile
-      fi
-    done
-  done
-}
-
-#combineMetrics
-
-function summarizeMetrics {
-  for metric in AUCs PermutedAUCs
-  do
-    summaryFile=ML-Flex_Results/${metric}_Summary.txt
-
-    cp ML-Flex_Results/24vs35/Pathways/UtahTraining/$metric.txt $tmpFile1
-    python code/MergeMatrixOnRowNames.py $tmpFile1 ML-Flex_Results/24vs35/Pathways/OntarioTesting/$metric.txt $tmpFile2 False
-    python code/MergeMatrixOnRowNames.py $tmpFile2 ML-Flex_Results/0124vs35/Pathways/UtahTraining/$metric.txt $tmpFile1 False
-    python code/MergeMatrixOnRowNames.py $tmpFile1 ML-Flex_Results/0124vs35/Pathways/OntarioTesting/$metric.txt $tmpFile2 False
-    python code/MergeMatrixOnRowNames.py $tmpFile2 ML-Flex_Results/CrossValidation/Pathways/Visvader/$metric.txt $tmpFile1 False
-    python code/MergeMatrixOnRowNames.py $tmpFile1 ML-Flex_Results/CrossValidation/Pathways/Bellacosa/$metric.txt $tmpFile2 False
-
-    echo -e "Pathway\tUtah Expression 24vs35 $metric\tOntario Expression 24vs35 $metric\tUtah Expression 0124vs35 $metric\tOntario Expression 0124vs35 $metric\tLim $metric\tBellacosa Breast $metric" > $tmpFile1
-    cat $tmpFile1 $tmpFile2 > $summaryFile
-  done
-
-  echo -e "Pathway\tNumControlNonMut\tNumControlMut\tNumCancerNonMut\tNumCancerMut\tUtah Exome 24vs35" > $tmpFile1
-  python code/SelectColumns.py UtahExomeData/Output/Pathway.MutFreq.Stats.txt 0,2,3,4,5,-1 $tmpFile2
-  tail -n +2 $tmpFile2 > $tmpFile3
-  cat $tmpFile1 $tmpFile3 > $tmpFile2
-
-  python code/MergeMatrixOnRowNames.py ML-Flex_Results/AUCs_Summary.txt ML-Flex_Results/PermutedAUCs_Summary.txt $tmpFile1
-  python code/MergeMatrixOnRowNames.py $tmpFile1 $tmpFile2 $tmpFile3
-
-  Rscript --vanilla code/AddCombinedP.R $tmpFile3 7,8,17 TRUE $tmpFile1
-  Rscript --vanilla code/AddCombinedP.R $tmpFile1 7,8,17,11,12 TRUE $tmpFile2
-  Rscript --vanilla code/AddCombinedP.R $tmpFile2 11,12 TRUE Results/Overall_Pathway_Summary.txt
-vim Results/Overall_Pathway_Summary.txt
-}
-
-#summarizeMetrics
+mkdir -p ML-Flex_Results/GSE12517
+cp -v ML-Flex/Output/GSE12517_TamoxifenExperiment/Results/GSE12517_weka_svm_weights_MeanFeatureRanks.txt ML-Flex_Results/GSE12517/Tamoxifen_MeanFeatureRanks.txt
+cp -v ML-Flex/Output/GSE12517_AromataseInhibitorExperiment/Results/GSE12517_weka_svm_weights_MeanFeatureRanks.txt ML-Flex_Results/GSE12517/AromataseInhibitor_MeanFeatureRanks.txt
 
 function identifySelectedGenes1 {
   selectedGenesDir=ML-Flex_Results/0124vs35/NoPathways/UtahTraining/SelectedGenes
@@ -187,34 +82,7 @@ function identifySelectedGenes1 {
   python code/SelectColumns.py $tmpFile4 0 $selectedGenesDir/utahontario2
 }
 
-#identifySelectedGenes1
-
-function identifySelectedGenes2 {
-  selectedGenesDir=ML-Flex_Results/24vs35/Pathways/UtahTraining/SelectedGenes
-  mkdir -p $selectedGenesDir
-  rm -f $selectedGenesDir/*
-
-  for pathway in `cat library/all_pathways.txt`
-  do
-    echo $pathway
-    numFeaturesAucFile=ML-Flex2/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/r_svm_rbf/Training_Data/Number_of_Features_vs_AUC.txt
-    featureRanksFile=ML-Flex2/Output/utahontario1_Pathways_24vs35_Experiment/Results/utahontario1.batch.$pathway/weka_svm_weights/Feature_Ranks.txt
-
-    if [ -f $numFeaturesAucFile ]
-    then
-      bestNumFeatures=`python code/ParseBestNumFeatures.py $numFeaturesAucFile`
-     tail -n +3 $featureRanksFile > $tmpFile1
-      head -n $bestNumFeatures $tmpFile1 > $tmpFile2
-      python code/SelectColumns.py $tmpFile2 0 $selectedGenesDir/$pathway
-    else
-      cp -v genesets/$pathway.gene.ids.txt $selectedGenesDir/$pathway
-    fi
-  done
-
-  python code/MergeGeneIDFilesIntoGmt.py "$selectedGenesDir/*" ML-Flex_Results/Pathways_24vs35_SelectedGenes.gmt
-}
-
-#identifySelectedGenes2
+identifySelectedGenes1
 
 function buildGeneStatsFile {
   statsFile=Results/Gene.Expression.Stats.txt
@@ -244,8 +112,6 @@ function buildGeneStatsFile {
   calcStats matrices/utahontario2.batch.txt clinical/ontario.0124vs35.txt BRCACancer fc $tmpDir/Stats/L &
   calcStats matrices/Visvader.txt clinical/Visvader.Control_vs_BRCA.classes.txt BRCA ttest $tmpDir/Stats/M &
   calcStats matrices/Visvader.txt clinical/Visvader.Control_vs_BRCA.classes.txt BRCA fc $tmpDir/Stats/N &
-  calcStats matrices/Bellacosa.txt clinical/Bellacosa.classes.txt BRCA ttest $tmpDir/Stats/O &
-  calcStats matrices/Bellacosa.txt clinical/Bellacosa.classes.txt BRCA fc $tmpDir/Stats/P &
   wait
 
   function mergeStats {
@@ -268,11 +134,11 @@ function buildGeneStatsFile {
   python code/AddDescriptionColumn.py $statsFile library/Entrez_gene_names.txt "[No Name]"
 
   python code/SelectColumns.py $statsFile 0,-2,-1,1to-3 $tmpFile1
-  echo -e "Entrez Gene ID\tGene Symbol\tGene Name\tUtah t-test 24vs35\tOntario1 t-test 24vs35\tOntario2 t-test 24vs35\tUtah Fold Change 24vs35\tOntario1 Fold Change 24vs35\tOntario2 Fold Change 24vs35\tUtah t-test 0124vs35\tOntario1 t-test 0124vs35\tOntario2 t-test 0124vs35\tUtah Fold Change 0124vs35\tOntario1 Fold Change 0124vs35\tOntario2 Fold Change 0124vs35\tVisvader t-test\tVisvader Fold Change\tBellacosa t-test\tBellacosa Fold Change" > $tmpFile2
+  echo -e "Entrez Gene ID\tGene Symbol\tGene Name\tUtah t-test 24vs35\tOntario1 t-test 24vs35\tOntario2 t-test 24vs35\tUtah Fold Change 24vs35\tOntario1 Fold Change 24vs35\tOntario2 Fold Change 24vs35\tUtah t-test 0124vs35\tOntario1 t-test 0124vs35\tOntario2 t-test 0124vs35\tUtah Fold Change 0124vs35\tOntario1 Fold Change 0124vs35\tOntario2 Fold Change 0124vs35\tVisvader t-test\tVisvader Fold Change" > $tmpFile2
   cat $tmpFile2 $tmpFile1 > $statsFile
 }
 
-#buildGeneStatsFile
+buildGeneStatsFile
 
 function consensusGenes {
   comparison=$1
@@ -312,27 +178,27 @@ function consensusGenes {
   tail -n +2 $tmpFile1 > $consensusGenesIDFile
 }
 
-#consensusGenes 24v35 3 4 5 6 7 8
-#consensusGenes 0124v35 9 10 11 12 13 14
+consensusGenes 24v35 3 4 5 6 7 8
+consensusGenes 0124v35 9 10 11 12 13 14
 
-#python code/FilterFile.py Results/Gene.Expression.Stats.txt "x[12] != 'NA' and x[13] != 'NA' and x[14] != 'NA'" 1 $tmpFile2
-#python code/InsertRankColumn.py $tmpFile2 True 12 True $tmpFile2
-#python code/InsertRankColumn.py $tmpFile2 True 13 True $tmpFile2
-#python code/InsertRankColumn.py $tmpFile2 True 14 True $tmpFile2
-#python code/SortFileByExpression.py $tmpFile2 "utilities.calculateMean([float(y) for y in x[19:]])" forward 1 $tmpFile1
-#python code/SelectColumns.py $tmpFile1 0 $tmpFile2
-#tail -n +2 $tmpFile2 > $tmpFile1
-#head -n 250 $tmpFile1 > Results/BCSP.Up.Gene.ID.0124vs35.txt
-#python code/CreateGmtFileFromIDs.py Results/BCSP.Up.Gene.ID.0124vs35.txt Results/BCSP.Up.0124vs35.gmt
+python code/FilterFile.py Results/Gene.Expression.Stats.txt "x[12] != 'NA' and x[13] != 'NA' and x[14] != 'NA'" 1 $tmpFile2
+python code/InsertRankColumn.py $tmpFile2 True 12 True $tmpFile2
+python code/InsertRankColumn.py $tmpFile2 True 13 True $tmpFile2
+python code/InsertRankColumn.py $tmpFile2 True 14 True $tmpFile2
+python code/SortFileByExpression.py $tmpFile2 "utilities.calculateMean([float(y) for y in x[19:]])" forward 1 $tmpFile1
+python code/SelectColumns.py $tmpFile1 0 $tmpFile2
+tail -n +2 $tmpFile2 > $tmpFile1
+head -n 250 $tmpFile1 > Results/BCSP.Up.Gene.ID.0124vs35.txt
+python code/CreateGmtFileFromIDs.py Results/BCSP.Up.Gene.ID.0124vs35.txt Results/BCSP.Up.0124vs35.gmt
 
 # Create expression file that includes all samples
-#python code/SelectColumns.py clinical/classes.0124vs35.txt 0 $tmpFile2
-#python code/TransposeData.py matrices/utahontario1.batch.txt $tmpFile3
-#python code/FilterFileByColumnValues.py $tmpFile3 0 $tmpFile2 1 $tmpFile4
-#python code/TransposeData.py $tmpFile4 $tmpFile5
-#python code/SelectColumns.py clinical/ontario.0124vs35.txt 0 $tmpFile2
-#python code/TransposeData.py matrices/utahontario2.batch.txt $tmpFile3
-#python code/FilterFileByColumnValues.py $tmpFile3 0 $tmpFile2 1 $tmpFile4
-#python code/TransposeData.py $tmpFile4 $tmpFile6
-#python code/MergeMatrixOnRowNames.py $tmpFile5 $tmpFile6 matrices/utahontario.batch.txt
-#python code/PrintMatrixDimensions.py matrices/utahontario.batch.txt
+python code/SelectColumns.py clinical/classes.0124vs35.txt 0 $tmpFile2
+python code/TransposeData.py matrices/utahontario1.batch.txt $tmpFile3
+python code/FilterFileByColumnValues.py $tmpFile3 0 $tmpFile2 1 $tmpFile4
+python code/TransposeData.py $tmpFile4 $tmpFile5
+python code/SelectColumns.py clinical/ontario.0124vs35.txt 0 $tmpFile2
+python code/TransposeData.py matrices/utahontario2.batch.txt $tmpFile3
+python code/FilterFileByColumnValues.py $tmpFile3 0 $tmpFile2 1 $tmpFile4
+python code/TransposeData.py $tmpFile4 $tmpFile6
+python code/MergeMatrixOnRowNames.py $tmpFile5 $tmpFile6 matrices/utahontario.batch.txt
+python code/PrintMatrixDimensions.py matrices/utahontario.batch.txt

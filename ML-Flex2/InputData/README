@@ -1,1 +1,0 @@
-This directory contains raw data files that can be used by ML-Flex data processors. These files can be in any format, as long as a Java class inheriting from AbstractDataProcessor or AbstractOutcomeDataProcessor has been developed to parse it. ML-Flex comes with data processors that can handle input data in the ARFF format and a tab-delimited format (a row for each data point).

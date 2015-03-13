@@ -1,0 +1,257 @@
+==================================================
+================ Information =====================
+==================================================
+
+ML-Flex web site: http://mlflex.sourceforge.net/
+
+ML-Flex downloads: https://sourceforge.net/projects/mlflex/files/
+
+ML-Flex support mailing list: https://lists.sourceforge.net/lists/listinfo/mlflex-support
+
+ML-Flex code (GIT) repository:
+
+  * https://github.com/srp33/ML-Flex
+  * git@github.com:srp33/ML-Flex.git
+
+Contributors:
+
+  * Stephen Piccolo, PhD (University of Utah, USA)
+  * Lewis Frey, PhD (University of Utah, USA)
+
+License:
+  GNU General Public License v3.0 (http://www.gnu.org/licenses/gpl.html)
+
+==================================================
+================ Introduction ====================
+==================================================
+
+ML-Flex uses machine-learning algorithms to derive models from independent variables, with the purpose of predicting the values of a dependent variable. For example, machine-learning algorithms have been applied successfully to the classic Iris data set, introduced by Sir Ronald Fisher in 1936, which contains four independent variables (sepal length, sepal width, petal length, petal width) and one dependent variable (species of Iris flowers = setosa, versicolor, or virginica).
+
+This directory and its subdirectories contain all the files necessary to run ML-Flex in its default configuration. However, ML-Flex supports various customizations. To help explain these customizations, this README file is provided, and each subdirectory contains a README file explaining the purpose of that subdirectory and how to make user-specific configuration changes (where applicable). In particular, the Config directory contains files that can be used to modify overall ML-Flex settings. This directory contains files to configure the algorithms (and associated parameters) that can be executed. As ML-Flex executes, it stores text files in various subdirectories. For example, the dependent-variable predictions for each data instance are stored in the Predictions subdirectory. And results are stored in the Output folder.
+
+ML-Flex's execution is based on the concept of "experiments." Each experiment consists of one or more sets of independent variables and a dependent variable. The user must specify in each experiment which data and which algorithms should be used. Other settings can also be configured, according to the user's preferences. Please see the Experiments directory for a detailed explanation of these settings and for sample experiment files. Once experiments have been configured, they can be specified when ML-Flex is executed.
+
+The ML-Flex source code is included in the Java directory. Each Java source file contains a header stating the licensing terms (GPLv3) and a description of the class. Each of the Java classes that begin with "Abstract" are designed to be generic implementations that can be extended by the user for custom purposes. For example, AbstractDataProcessor contains logic to parse raw data, store it in the ML-Flex standard format, provide a description of the data, etc. Each Abstract class contains documentation for the methods that can be extended, to help the advanced user understand how to do this.
+
+A precompiled JAR file comes with the ML-Flex distribution. If you would like to modify the ML-Flex source code and recompile it, a "build" script is provided. If such changes are made, please consult with the author to discuss inclusion of source-code changes into the main development branch.
+
+==================================================
+================= Running ML-Flex ================
+==================================================
+
+Prerequisites:
+
+  a. The Java SDK must be installed. This software comes preinstalled on many systems or can be downloaded from http://www.oracle.com/technetwork/java/javase/downloads/index.html if necessary. ML-Flex was designed and tested on Java 1.6; it should work with earlier or later versions of Java, but it has not been tested on them. Once Java is installed, make sure the computer's path is configured properly to point to it. You can test this by typing "javac -version" at the command line. If it is working properly, it will list the version of Java that is installed. The default configuration of ML-Flex should work on any operating system that can run Java.
+
+  b. Third-party machine-learning packages may need to be installed. By default, ML-Flex can interface with the Java API of the Weka machine-learning software; no extra configuration is needed to do this. However, ML-Flex can also interface with the Orange machine-learning framework (http://orange.biolab.si/) and C5.0 Decision Trees software (http://www.rulequest.com/see5-info.html). Please visit the respective sites of these third-party packages for information on how to install and configure them. The Config/README file contains information about how to configure ML-Flex to use them after they have been installed. It is anticipated that other external packages also will be supported in the future.
+
+  c. The "ant" build tool may also need to be installed if you desire to modify the Java code and recompile it. This is not a necessary step and will not be required for most users. This tool comes preinstalled on many systems or can be downloaded from http://ant.apache.org if necessary. You can test whether ant has been installed and is accessible by typing "ant -version" at the command line; if it is working properly, the ant version will be indicated.
+
+  d. One of the main features of ML-Flex is that it can be executed in parallel, not only on a single machine but also across multiple computing nodes (for example, in a cluster computing environment). When running ML-Flex across multiple nodes, it is essential that a shared file system be available to all nodes. This is a feature present on many/most cluster-computing systems that support submission of jobs as batches (e.g, PBS); otherwise, similar functionality may be achieved using the Network File System protocol on UNIX-based systems or a shared network drive on Windows. As ML-Flex executes on any given computing node, it retrieves and stores files that must be accessible to other nodes in order to communicate (indirectly) its progress. 
+
+This folder contains five scripts that demonstrate how to run ML-Flex at the command line: "preprocess," "process," "summarize," and "export." These scripts were developed on Mac OS X but should work on any UNIX-like environment; the syntax will be slightly different on Windows (please send an email to the support mailing list for help, if needed).
+
+The preprocess, process, summarize, and export scripts are designed to execute all of the example experiments for which experiment files exist in the Experiments directory. The preprocess script invokes the "Preprocess" ML-Flex action (see a description in the ACTION section below), the process script invokes the "Process" ML-Flex action, etc. For example, to execute the preprocess script, enter ./preprocess at the command line (on UNIX-like environments). ML-Flex will output information to the screen describing what it is currently executing. If ML-Flex completes successfully, you will see "Successfully completed!" at the end of the output. A "runall" script is also provided; this script executes the Preprocess, Process, Summarize, and Export actions in succession. However, please note that process is the only action that should be (and makes sense to be) executed across multiple nodes (see ACTION command-line argument below).
+
+The example script files are provided for demo purposes and will meet many users' needs. However, various command-line arguments can be specified at the command line to run ML-Flex in custom configurations. Two of these arguments are mandatory, while the remaining arguments are optional. Below is a list of all command-line arguments, along with examples of how to use them.
+
+==================================================
+======== Mandatory command-line arguments ========
+==================================================
+
+ACTION
+
+  Description: This setting requires the user to specify one of four "actions" that will be performed when ML-Flex executes. These actions are listed and described below. 
+
+     a. Preprocess*** = Any metadata processors and data processors specified for a given experiment will be executed. This action should be performed only on a single computing node.
+     b. Process =  Feature selection and classification will be performed. This action can be performed in parallel across multiple computing nodes.
+     c. Summarize*** = If multiple algorithms were used in a given experiment, ensemble (combiner) algorithms will be applied to the various predictions that have been made for each instance. Additionally, classification performance will be assessed in this step. This action should be performed only on a single computing node.
+     d. Export*** = After data have been loaded into ML-Flex, it can export the data to other file formats (for example, tab delimited or ARFF). These files can then be used for downstream analyses. This action should be performed only on a single computing node.
+
+  ***Note: The Preprocess, Summarize, and Export actions should be executed only on a single computing node; executing these actions across multiple nodes may have unintended consequences. However, the "Process" action may be executed across multiple computing nodes.
+
+EXPERIMENTS
+
+  Description: This setting requires a list of all experiments that will be run when ML-Flex executes. The experiment names should correspond with file names stored in the Experiments folder. If multiple values are specified, they should be separated by commas.
+
+==================================================
+======== Optional command-line arguments ========
+==================================================
+
+DEBUG
+
+  Description: In additional to what is stored in the log file, ML-Flex can output debugging information to a separate file. This can help in troubleshooting any problems that may be occurring. By default, debugging is turned off to avoid computational and storage overhead. To turn debugging on, this value should be set to true.
+
+  Default: false
+
+DEBUG_FILE
+
+  Description: This argument specifies the location of the debugging file. If this file does not already exist, ML-Flex will attempt to create it; an error will occur if this file cannot be created.
+
+  Default: This file is called Debug.txt and is stored in the main directory.
+
+CONFIG_DIR
+
+  Description: The config directory stores configuration information that is used across all ML-Flex experiment. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Config" and resides within the main directory.
+
+DATA_DIR
+
+  Description: This is the directory where all processed data sets will be stored. Files in this directory will follow a standard format, after the data have been pulled from the raw data directory and processed by ML-Flex. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Data" and resides within the main directory.
+
+EXPERIMENTS_DIR
+
+  Description: The experiments directory stores experiment files. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Experiments" and resides within the main directory.
+
+FEATURE_SELECTION_DIR
+
+  Description: The feature-selection directory stores files that record which features were selected for a given experiment. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "FeatureSelection" and resides within the main directory.
+
+LOCKS_DIR
+
+  Description: The locks directory stores temporary files that are used for communication across threads and computing nodes to indicate which tasks are currently being executed. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Locks" and resides within the main directory.
+
+LOG_FILE
+
+  Description: ML-Flex logs information not only to the console but also to an output file. This enables the user to track the status of what ML-Flex has executed. An error will occur if this file cannot be created. If this file does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+  
+  Default: This file is called Log.txt and is stored in the main directory.
+
+MAIN_DIR
+
+  Description: This is the directory will all the auxiliary files and directories (in addition to the .jar files) are stored. In many cases, these will be in the same directory as the .jar files; however, sometimes it may be desired to store them in a different location. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: The local directory.
+
+NUM_THREADS
+
+  Description: ML-Flex uses the Java threading capability to execute computing tasks in parallel. With this setting, the user can specify the maximum number of threads per computing node that can be used by ML-Flex. If ML-Flex seems to be running slowly on large data sets, it may be that this value is too high.
+
+  Default: The number of processors available to the Java virtual machine on the computer on which ML-Flex is executed.
+
+NUM_TRAINING_INSTANCES_TO_EXCLUDE_RANDOMLY
+
+  Description: This configuration value enables experiments to exclude one or more data instances from each training set. This technique can be used to assess the effect of outlier instances on classification performance (for example, if removing a single instance impacts performance severely, it may be an outlier). Typically, this approach would be repeated over multiple iterations (see TIMES_TO_ITERATE experiment configuration value), and the variability across the iterations would be assessed.
+
+  Default: 0
+
+OUTPUT_DIR
+
+  Description: The output directory stores result files for a given experiment. These files record classification metrics, such as Accuracy and AUC, and contain general summaries of the results. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Output" and resides within the main directory.
+
+PAUSE_SECONDS
+
+  Description: When ML-Flex attempts to execute tasks across multiple computing nodes, it may identify a situation where a processing task remains to be performed and it appears that another thread is currently executing that task. In most cases, this is truly because the task is being executed, so the current thread will pause for a short time and wait to see if the other thread has completed processing. If so, the current thread will move on to the next set of tasks. Otherwise, the current thread will pause again, and this process will repeat until the thread timeout has occurred (after which the corresponding lock file will be deleted and the current thread will attempt to execute the task). The PAUSE_SECONDS configuration value specifies the number of seconds that each pause will last.
+
+  Default: 60
+
+PRE_DELETE_DIRS
+
+  Description: Before ML-Flex performs the requested actions, it can remove existing files from directories. This may be useful if one wants to restart (all or part of) an analysis. Options for this setting include SelectedFeatures, Predictions, Output, Locks, TempData, TempResults, and All. If multiple values are specified, they should be separated by commas. If All is specified, all of the above mentioned directories will be cleared. If this setting is omitted or is left blank, no directories will be cleared. Note: Be careful with this setting because it can be unforgiving!
+
+  Default value: [blank]
+
+PREDICTIONS_DIR
+
+  Description: The predictions directory stores files that record predictions for each data instance and algorithm combination for a given experiment. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Predictions" and resides within the main directory.
+
+RAW_DATA_DIR
+
+  Description: This is the directory where all raw data will be stored. Raw data for individual data processors can be stored within subdirectories if desired (the Java code for that data processor should indicate this). If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+  
+  Default: This directory is called "RawData" and resides within the main directory.
+
+SKIP_PREVIOUSLY_COMPLETED_ITERATIONS
+
+  Description: Sometimes experiments are repeated across multiple iterations. If ML-Flex is stopped and restarted, it may be desirable to skip iterations that have previously been completed. This can speed up analyses. If settings for an experiment have changed, then it would not be desirable to skip re-execution of ML-Flex processing steps; so the default for this configuration value is "false." If experiment settings have remained constant, and the experiment is run over multiple iterations, set this to "true" to enable skipping.
+
+  Default: false
+
+STATUS_DIR
+
+  Description: The status directory stores files that indicate whether certain steps in an experiment have been completed.If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "Status" and resides within the main directory.
+
+TEMP_DATA_DIR
+
+  Description: In certain cases, ML-Flex will need to create temporary files and directories. This directory will be used for that purpose. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "TempData" and resides within the main directory.
+
+TEMP_RESULTS_DIR
+
+  Description: In certain cases, third-party packages that are invoked from within ML-Flex will need to create temporary files and directories. This directory will be used for that purpose. If this directory does not already exist, ML-Flex will attempt to create it; an error will occur if it cannot be created.
+
+  Default: This directory is called "TempResults" and resides within the main directory.
+
+THREAD_TIMEOUT_MINUTES
+
+  Description: ML-Flex uses the Java threading capability to execute computing tasks in parallel. For a variety of reasons, a thread may "hang" and not return a result. Thus it may be desirable to specify a timeout period after which ML-Flex will abandon a thread and retry executing the task. It is recommended that this setting be longer than the longest time that any given feature selection or classification task is expected to take.
+
+  Default value: 60
+
+==================================================
+==================== Output ======================
+==================================================
+
+As ML-Flex executes, it stores result files in an "Output" directory. This directory contains a folder for each experiment that has been executed. The various categories of output files are described below. Note: When an experiment is configured to perform multiple iterations (see NUM_ITERATIONS experiment configuration value), a file for each iteration will be saved in most cases.
+
+  *_Results*.txt = These files contain scalar result values from the experiment. For example, these values include metrics such as the classification accuracy (total # of data instances predicted correctly), AUC (area under the ROC curve), the number of features/variables that resulted in the best classification performance, etc. scalar values will be present in these files. (These files are created when the Summarize action is executed.)
+
+  OverallResultsSummary.txt = This file provides a table summarizing all the scalar results. (This file is created when the Summarize action is executed.)
+
+  *_Statistics.txt = These files contain statistics that describe a particular data set or all data sets. (These files are created when the Summarize action is executed.)
+
+  *_InnerNumFeatures_ResultsSummary*.txt = These files indicate the AUC results for inner cross-validation folds for each number of features that was tested. The "best" number of features corresponds with the number that performed best here. (These files are created when the Summarize action is executed.)
+
+  *_OuterNumFeatures_ResultsSummary*.txt = These files indicate the AUC results for outer cross-validation folds for each number of features that was tested. This data can be used for sensitivity analyses, etc., but these data are not used in determining the "best" number of features. (These files are created when the Summarize action is executed.)
+
+  *_MeanFeatureRanks_*.txt = These files indicate the mean ranks for each feature/variable across all cross-validation folds. This information can be useful in interpreting the results. (These files are created when the Summarize action is executed.)
+
+  *_PredictionInfo_*.txt = These files contain information about the dependent-variable predictions that were made for data instances. This information can be used for create plots such as ROC curves. (These files are created when the Summarize action is executed.)
+
+  *.tab = These are tab-delimited files containing data for each data processor. These files may be useful for performing downstream analyses or plots. (These files are created when the Export action is executed.)
+
+  *.arff = These files contain data for each data processor, formatted in the ARFF format (http://www.cs.waikato.ac.nz/~ml/weka/arff.html). This format is used by some other software packages. (These files are created when the Export action is executed.)
+
+==================================================
+========= Ensemble Learning Approaches ===========
+==================================================
+
+In addition to making predictions using each classification algorithm specified in a given experiment, ML-Flex can also make predictions using various ensemble-learning methods. These methods combine evidence across multiple individual predictions to derive an aggregate prediction. Individual predictions for each combination of feature-selection algorithm, classification algorithm, and data processor will be used to form the ensemble predictions (when only one combination exists, ensemble learning will not be performed). Below is a short description of each of these approaches.
+
+  Majority Vote = This method counts the number of predictions a data instance received for a given dependent-variable value and makes an aggregate prediction in favor of the value that received the most votes; in situations where multiple values receive the same number of votes, the predicted value will be selected at random.
+
+  Simple Weighted Vote = This method attempts to place most emphasis on individual predictions that appear to be most informative. The weights assigned to individual predictions are based on the AUC attained via nested cross validation for the relevant combination of data category, feature-selection algorithm, and classification algorithm.
+  
+  Select Best = For each data instance, the Select Best method makes a prediction based on the individual prediction that received the highest weight (AUC) in nested cross validation.
+
+  Max Probability = This method examines the probabilities for each dependent-variable value across all predictions: the dependent-variable value with the highest probability is selected.
+
+  Mean Probability = This method averages the probabilities for each dependent-variable value across all predictions: the dependent-variable value with the highest mean probability is selected. 
+
+  Weighted Mean Probability = This method assigns a weight (derived as in Simple Weighted Vote) to each probability and then calculates the mean for each outcome.
+  
+  Stacked Generalization = This method uses the probabilities from the individual predictions and trains a second-level classification algorithm to make aggregate predictions based on those values. Any classification algorithm can be used for the second-level predictions. By default, ML-Flex uses the Support Vector Machines algorithm for the second-level predictions; however, this is configurable (see Experiments/README). Two types of stacked generalization are used: 1) probabilities and 2) classes. With the former, the second-level classification algorithm is trained on the numeric probabilities assigned by the first-level algorithms. With the latter, the second-level algorithm is trained on the classes predicted by the first-level algorithms.
+
+==================================================
+==================== Notes =======================
+==================================================
+
+When executing Java programs at the command line, it is common to get an "OutOfMemoryException" error. By default, Java allocates a minimal amount of memory. If this limit is exceeded, Java will stop executing and give this error, indicating it has run out of memory. However, it is possible to prevent this error by telling Java that you want to allocate more than the default minimum memory. This can be done with the -Xmx parameter. The example scripts specify a limit of 1 gigabyte of memory (-Xmx1g), but this can be changed according to the user's preferences and the amount of memory available on the system being used.
+
+As the "process" action executes, it stores files in the Locks folder. These files are used to communicate (indirectly) across threads and computing nodes to enable parallel processing. If an error occurs or if execution of ML-Flex is interrupted, these files will remain on the server. Thus when ML-Flex is restarted, it will not attempt to execute the corresponding tasks (having assumed another computing node is still executing those tasks). After the specified timeout period (see THREAD_TIMEOUT_HOURS argument above), these files will be deleted automatically; however, if the timeout period has not passed, those tasks will not be executed unless the files are removed manually. These files can be removed either manually by the user or by ML-Flex using the PRE_DELETE_DIRS argument (see above). However, be careful to delete lock files only when no computing nodes are currently executing ML-Flex.

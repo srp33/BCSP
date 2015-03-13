@@ -1,0 +1,28 @@
+@relation data
+
+@attribute id string
+@attribute Class {Post_menopausal_AromataseInhibitor,Post_menopausal}
+
+@data
+GSM314518,Post_menopausal
+GSM314533,Post_menopausal_AromataseInhibitor
+GSM314517,Post_menopausal
+GSM314538,Post_menopausal_AromataseInhibitor
+GSM314536,Post_menopausal_AromataseInhibitor
+GSM314537,Post_menopausal_AromataseInhibitor
+GSM314534,Post_menopausal_AromataseInhibitor
+GSM314535,Post_menopausal_AromataseInhibitor
+GSM314532,Post_menopausal_AromataseInhibitor
+GSM314519,Post_menopausal
+GSM314530,Post_menopausal_AromataseInhibitor
+GSM314531,Post_menopausal_AromataseInhibitor
+GSM314529,Post_menopausal_AromataseInhibitor
+GSM314528,Post_menopausal
+GSM314525,Post_menopausal
+GSM314524,Post_menopausal
+GSM314527,Post_menopausal
+GSM314526,Post_menopausal
+GSM314521,Post_menopausal
+GSM314520,Post_menopausal
+GSM314523,Post_menopausal
+GSM314522,Post_menopausal

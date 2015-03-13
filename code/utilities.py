@@ -7,6 +7,15 @@ from random import uniform, sample
 import numpy
 from collections import defaultdict
 
+def printFlush(text, outFilePath=None):
+    print text
+    sys.stdout.flush()
+
+    if outFilePath != None:
+        outFile = open(outFilePath, 'a')
+        outFile.write(text + "\n")
+        outFile.close()
+
 def printMatrix(data):
     for x in data:
         print x
@@ -83,11 +92,17 @@ def readMatrixFromFile(filePath, numLines=None):
 
     return matrix
 
-def writeMatrixToFile(x, filePath):
-    outFile = open(filePath, 'w')
-    for y in x:
-        outFile.write("\t".join(y) + "\n")
+def writeMatrixToFile(x, filePath, writeMode='w'):
+    outFile = open(filePath, writeMode)
+    writeMatrixToOpenFile(x, outFile)
     outFile.close()
+
+def writeMatrixToOpenFile(x, outFile):
+    for y in x:
+        outFile.write("\t".join([str(z) for z in y]) + "\n")
+
+def appendMatrixToFile(x, filePath):
+    writeMatrixToFile(x, filePath, writeMode='a')
 
 def readTextFromFile(filePath):
     text = ""
@@ -538,3 +553,8 @@ def globRecursive(directory, pattern):
 
 def isNumeric(x):
     return str(x).replace(".", "").replace("-", "").isdigit()
+
+
+def sortMatrix(data, columnIndex, reverse=False):
+    data.sort(key=itemgetter(columnIndex), reverse=reverse)
+    return data
