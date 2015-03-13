@@ -14,6 +14,8 @@ Prerequisites
 Analysis
 ====
 
+This repository contains code and scripts that were used for the manuscript entitled, "Gene-expression patterns in peripheral blood classify familial breast cancer susceptibility."
+
 To run the analysis, you would execute the ```go``` bash script. This calls various other scripts.
 
 Notes
