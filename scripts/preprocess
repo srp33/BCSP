@@ -87,7 +87,7 @@ do
   Rscript --vanilla ../code/BatchAdjust.R ../code/ComBat.R utah${validationCohort}.expr.txt ../clinical/BatchInfo.Study.txt utah${validationCohort}.batch.txt
   cd ..
 
-  # Remove genes that are associated with epi/blood variables
+  # Remove genes that are associated with epi/blood variables (for batch-adjusted data)
   Rscript --vanilla code/EpiBloodFiltering.R clinical/blood.txt secure/epidemiologic.txt matrices/utah${validationCohort}.batch.txt misc/utah${validationCohort}.epiblood.keep.txt misc/utah${validationCohort}.epiblood.filter.txt
   python code/FilterFileByColumnValues.py matrices/utah${validationCohort}.batch.txt 0 misc/utah${validationCohort}.epiblood.keep.txt 1 $tmpFile1
   cp $tmpFile1 matrices/utah${validationCohort}.batch.txt
