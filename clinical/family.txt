@@ -44,7 +44,7 @@ Utah__D06	3
 Utah__D07	2
 Utah__D08	2
 Utah__D09	2
-Utah__D10	4
+Utah__D10	2
 Utah__D11	2
 Utah__D12	2
 Utah__E01	5
@@ -54,10 +54,10 @@ Utah__E04	4
 Utah__E05	4
 Utah__E06	5
 Utah__E07	5
-Utah__E08	4
+Utah__E08	2
 Utah__E09	5
 Utah__E10	5
-Utah__E11	4
+Utah__E11	2
 Utah__E12	3
 Utah__F01	1
 Utah__F02	1
@@ -103,7 +103,7 @@ Utah__I07	2
 Utah__I08	4
 Utah__I09	4
 Utah__I10	4
-Utah__I11	4
+Utah__I11	2
 Utah__I12	4
 Utah__I13	1
 Utah__J01	0
